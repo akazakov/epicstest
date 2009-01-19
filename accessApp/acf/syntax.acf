@@ -1,0 +1,33 @@
+# Test acf syntax
+UAG(uag0)
+UAG(uag1) {user1}
+UAG(uag2) {user1,user2,user3}
+HAG(hag0)
+HAG(hag1) {host1}
+HAG(hag2) {host1,host2,host3,xx.yy.zz}
+ASG(asg0)
+ASG(DEFAULT) {
+	RULE(0,READ)
+}
+ASG(asg2) {
+	RULE(0,WRITE) {
+		UAG(uag1)
+	}
+}
+ASG(asg1) {
+	INPA(mrkLOCALasginpa)
+	INPB(pv:0[]<>.XYZ)
+	RULE(0,READ)
+	RULE(0,READ) {
+		CALC("a=1?(b=1?1:0):0")
+	}
+	RULE(1,WRITE) {
+		UAG(uag1)
+		HAG(hag1)
+	}
+	RULE(0,WRITE) {
+		CALC("a=1?(b=1?1:0):0")
+		UAG(uag1,uag2)
+		HAG(hag1,hag2)
+	}
+}

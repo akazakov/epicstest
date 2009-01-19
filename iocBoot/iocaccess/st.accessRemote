@@ -1,0 +1,13 @@
+# Example vxWorks startup file
+< cdCommands
+< ../nfsCommands
+cd topbin
+
+ld < access.munch
+cd startup
+asSetFilename("../../accessApp/acf/remote.acf")
+dbLoadDatabase("../../dbd/access.dbd")
+access_registerRecordDeviceDriver(pdbbase)
+dbLoadRecords("../../accessApp/db/remote.db")
+asCaDebug=1
+iocInit

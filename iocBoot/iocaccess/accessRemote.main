@@ -1,0 +1,5 @@
+asSetFilename("../../accessApp/acf/remote.acf")
+dbLoadDatabase("../../dbd/access.dbd")
+access_registerRecordDeviceDriver(pdbbase)
+dbLoadRecords("../../accessApp/db/remote.db")
+iocInit

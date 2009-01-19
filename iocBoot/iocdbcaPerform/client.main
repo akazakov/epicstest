@@ -1,0 +1,4 @@
+dbLoadDatabase("../../dbd/common.dbd",0,0)
+common_registerRecordDeviceDriver(pdbbase)
+dbLoadRecords("../../dbcaPerformApp/Db/client.db",0)
+iocInit()

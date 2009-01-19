@@ -1,0 +1,395 @@
+
+file {
+	name="/home/phoebus6/MRK/epics/test/miscApp/adl/testLinear.adl"
+	version=020303
+}
+display {
+	object {
+		x=766
+		y=37
+		width=400
+		height=500
+	}
+	clr=14
+	bclr=4
+	cmap=""
+	gridSpacing=5
+	gridOn=0
+	snapToGrid=0
+}
+"color map" {
+	ncolors=65
+	colors {
+		ffffff,
+		ececec,
+		dadada,
+		c8c8c8,
+		bbbbbb,
+		aeaeae,
+		9e9e9e,
+		919191,
+		858585,
+		787878,
+		696969,
+		5a5a5a,
+		464646,
+		2d2d2d,
+		000000,
+		00d800,
+		1ebb00,
+		339900,
+		2d7f00,
+		216c00,
+		fd0000,
+		de1309,
+		be190b,
+		a01207,
+		820400,
+		5893ff,
+		597ee1,
+		4b6ec7,
+		3a5eab,
+		27548d,
+		fbf34a,
+		f9da3c,
+		eeb62b,
+		e19015,
+		cd6100,
+		ffb0ff,
+		d67fe2,
+		ae4ebc,
+		8b1a96,
+		610a75,
+		a4aaff,
+		8793e2,
+		6a73c1,
+		4d52a4,
+		343386,
+		c7bb6d,
+		b79d5c,
+		a47e3c,
+		7d5627,
+		58340f,
+		99ffff,
+		73dfff,
+		4ea5f9,
+		2a63e4,
+		0a00b8,
+		ebf1b5,
+		d4db9d,
+		bbc187,
+		a6a462,
+		8b8239,
+		73ff6b,
+		52da3b,
+		3cb420,
+		289315,
+		1a7309,
+	}
+}
+valuator {
+	object {
+		x=1
+		y=300
+		width=173
+		height=45
+	}
+	control {
+		chan="mrkLinearAoUP"
+		clr=14
+		bclr=4
+	}
+	label="channel"
+	dPrecision=0.001000
+}
+"text update" {
+	object {
+		x=198
+		y=317
+		width=161
+		height=20
+	}
+	monitor {
+		chan="mrkLinearAoUPRaw"
+		clr=14
+		bclr=4
+	}
+}
+valuator {
+	object {
+		x=1
+		y=350
+		width=173
+		height=45
+	}
+	control {
+		chan="mrkLinearAoOldBP"
+		clr=14
+		bclr=4
+	}
+	label="channel"
+	dPrecision=0.001000
+}
+"text update" {
+	object {
+		x=198
+		y=367
+		width=161
+		height=20
+	}
+	monitor {
+		chan="mrkLinearAoOldBPRaw"
+		clr=14
+		bclr=4
+	}
+}
+valuator {
+	object {
+		x=1
+		y=400
+		width=173
+		height=45
+	}
+	control {
+		chan="mrkLinearAoroffBP"
+		clr=14
+		bclr=4
+	}
+	label="channel"
+	dPrecision=0.001000
+}
+"text update" {
+	object {
+		x=198
+		y=417
+		width=161
+		height=20
+	}
+	monitor {
+		chan="mrkLinearAoroffBPRaw"
+		clr=14
+		bclr=4
+	}
+}
+valuator {
+	object {
+		x=1
+		y=450
+		width=173
+		height=45
+	}
+	control {
+		chan="mrkLinearAoeoffBP"
+		clr=14
+		bclr=4
+	}
+	label="channel"
+	dPrecision=0.001000
+}
+"text update" {
+	object {
+		x=198
+		y=467
+		width=161
+		height=20
+	}
+	monitor {
+		chan="mrkLinearAoeoffBPRaw"
+		clr=14
+		bclr=4
+	}
+}
+valuator {
+	object {
+		x=1
+		y=250
+		width=173
+		height=45
+	}
+	control {
+		chan="mrkLinearAoOldUP"
+		clr=14
+		bclr=4
+	}
+	label="channel"
+	dPrecision=0.001000
+}
+"text update" {
+	object {
+		x=198
+		y=267
+		width=161
+		height=20
+	}
+	monitor {
+		chan="mrkLinearAoOldUPRaw"
+		clr=14
+		bclr=4
+	}
+}
+composite {
+	object {
+		x=1
+		y=50
+		width=358
+		height=45
+	}
+	"composite name"=""
+	vis="static"
+	chan=""
+	children {
+		valuator {
+			object {
+				x=1
+				y=50
+				width=173
+				height=45
+			}
+			control {
+				chan="mrkLinearAiUPRaw"
+				clr=14
+				bclr=4
+			}
+			label="channel"
+			dPrecision=1.000000
+		}
+		"text update" {
+			object {
+				x=198
+				y=67
+				width=161
+				height=20
+			}
+			monitor {
+				chan="mrkLinearAiUP"
+				clr=14
+				bclr=4
+			}
+		}
+	}
+}
+valuator {
+	object {
+		x=1
+		y=99
+		width=173
+		height=45
+	}
+	control {
+		chan="mrkLinearAiOldBPRaw"
+		clr=14
+		bclr=4
+	}
+	label="channel"
+	dPrecision=1.000000
+}
+"text update" {
+	object {
+		x=198
+		y=116
+		width=161
+		height=20
+	}
+	monitor {
+		chan="mrkLinearAiOldBP"
+		clr=14
+		bclr=4
+	}
+}
+valuator {
+	object {
+		x=1
+		y=149
+		width=173
+		height=45
+	}
+	control {
+		chan="mrkLinearAiroffBPRaw"
+		clr=14
+		bclr=4
+	}
+	label="channel"
+	dPrecision=1.000000
+}
+"text update" {
+	object {
+		x=198
+		y=166
+		width=161
+		height=20
+	}
+	monitor {
+		chan="mrkLinearAiroffBP"
+		clr=14
+		bclr=4
+	}
+}
+composite {
+	object {
+		x=1
+		y=199
+		width=358
+		height=45
+	}
+	"composite name"=""
+	vis="static"
+	chan=""
+	children {
+		valuator {
+			object {
+				x=1
+				y=199
+				width=173
+				height=45
+			}
+			control {
+				chan="mrkLinearAieoffBPRaw"
+				clr=14
+				bclr=4
+			}
+			label="channel"
+			dPrecision=1.000000
+		}
+		"text update" {
+			object {
+				x=198
+				y=216
+				width=161
+				height=20
+			}
+			monitor {
+				chan="mrkLinearAieoffBP"
+				clr=14
+				bclr=4
+			}
+		}
+	}
+}
+valuator {
+	object {
+		x=1
+		y=1
+		width=173
+		height=45
+	}
+	control {
+		chan="mrkLinearAiOldUPRaw"
+		clr=14
+		bclr=4
+	}
+	label="channel"
+	dPrecision=1.000000
+}
+"text update" {
+	object {
+		x=198
+		y=18
+		width=161
+		height=20
+	}
+	monitor {
+		chan="mrkLinearAiOldUP"
+		clr=14
+		bclr=4
+	}
+}

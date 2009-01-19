@@ -1,0 +1,11 @@
+O.*
+*.swp
+include
+dbd
+db
+bin
+*.db
+lib
+man
+templates
+doc

@@ -1,0 +1,54 @@
+This directory contains a database and command files for testing access
+security.
+
+
+SHORT INSTRUCTIONS:
+
+IF YOU ARE NOT Andrew Johnson on uranus then you must modify
+    the asSetSubstitutions (user, host, iocRemote) calls in
+    st.accessLocal accessLocal.main acessTest.main (iocBoot/iocaccess)
+    the test user and host arrays in asTest.c (src directory)
+    and the access security files *.acf (acf directory)
+
+    1) boot the local ioc (DO NOT boot remote IOC)
+       vxWorks boot using st.accessLocal
+       other platforms boot with
+           ../../bin/<arch>/access accessLocal.main
+    2) on host in iocBoot/iocaccess
+           uranus% rm temp*
+    3) on IOC execute the iocsh command
+           epics> asTest "temp"
+    4) on host issue the command
+           uranus% diff asTest2006.11.27-anj temp
+       No differences should be found.
+    5) on IOC execute the iocsh command
+           epics> asTrapWriteTest "temp1"
+    6) on host issue the commands (Needs base/bin/<arch> in $PATH)
+           uranus% sh asTrapWriteTest
+           diff asTrapWriteTest2006.11.27-anj temp1
+       No differences should be found IF you are anj on uranus
+       OR you applied all the necessary changes mentioned above
+
+To test between iocs
+
+1) Boot both accessLocal and accessRemote
+   a) For vxWorks boot using st.accessLocal and st.accessRemote
+   b) For host use two different workstations. Start
+      ../bin/<arch>/access accessRemote.main
+      ../bin/<arch>/access accessLocal.main
+2) Use medm to bring up the display adl/client.adl
+   If you're using dm2k: the "-readonly" option does not work!
+
+NOTE: The following only works on vxWorks
+
+To test restarting access security (make sure medm display is running):
+
+On local ioc execute the command:
+
+sp asinittest,"../../accessApp/acf/local.acf","../../accessApp/acf/local2.acf"
+
+On remote ioc execute the command:
+
+
+sp asinittest,"../../accessApp/acf/remote.acf","../../accessApp/acf/remote2.acf"
+

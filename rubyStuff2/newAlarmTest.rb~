@@ -1,0 +1,18 @@
+require "EPICSTestUtils" 
+
+class MyTest < EPICSTestUtils::Test
+   def run
+      result = cmd[0].exec("caget mrkai")
+      puts result
+      puts "===="
+      puts ioc[0].read
+   end
+end
+
+class MyTestCase < EPICSTestUtils::TestCase
+end
+config = EPICSTestUtils::Cfg.load("newconf.yml")
+myConf = EPICSTestUtils::Cfg.find(config,"MyTestCase")
+mtc = MyTestCase.new(EPICSTestUtils::TAPFormatter.new, "MyTest", myConf)
+mtc << MyTest.new(mtc.formatter,mtc)
+mtc.run

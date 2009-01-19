@@ -1,0 +1,3 @@
+#test synchronous
+dbtpn "mrkhead","2"
+epicsThreadSleep(1.0)

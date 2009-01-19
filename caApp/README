@@ -1,0 +1,37 @@
+To start the ioc
+
+On vxWorks boot from iocBoot/iocca/st.cmd
+On RTEMS boot common with CMDLINE iocBoot/iocca/stcmd.host
+On others
+    cd iocBoot/iocca
+    ../../bin/<arch>/common stcmd.host
+
+To run clients
+    ../../bin/<arch>/testcaget 5000 1
+In another window
+    ../../bin/<arch>/testcaput 5000 5
+
+If you shutdown (vxWorks: reboot) the IOC, the clients should
+immediately react with printing their message
+
+CA.Client.Exception...............................................
+    Warning: "Virtual circuit disconnect"
+    Context: "nn.nn.nn.nn:5064"
+    Source File: ../cac.cpp line xxxx
+    Current Time: Sun Dec 36 2010 12:34:56.789012345
+..................................................................
+
+If you suspend the IOC (vxWorks: disconnect the network),
+the clients should print a similar message approx. 34 seconds
+after the IOC disappeared:
+
+CA.Client.Exception...............................................
+    Warning: "Virtual circuit unresponsive"
+    Context: "nn.nn.nn.nn:5064"
+    Source File: ../tcpiiu.cpp line xxx
+    Current Time: Mon Nov 45 2017 15:47:31.573785000
+..................................................................
+
+
+Longer timeouts are a hint to an error detecting stale TCP circuits. You
+should verify this and probably inform Jeff.

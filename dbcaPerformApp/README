@@ -1,0 +1,39 @@
+MARTY ADD TEST FOR dbCaGetAttributes
+
+In ../iocBoot/iocdbcaPerform
+
+Boot master with st.master     resp. ../../bin/<arch>/common master.main
+Boot client with st.client     resp. ../../bin/<arch>/common client.main
+ 
+
+On master execute the command:
+ 
+dbpf "mrkMasterEvent.SCAN","1 second"
+ 
+ 
+In another window run
+ 
+cau
+monitor  mrkMasterAiFromMaster0099
+
+  (or camonitor mrkMasterAiFromMaster0099)
+
+ 
+On Unix execute the command
+ 
+../../bin/<arch>/changeLinks 100 5 0xf
+ 
+ 
+The monitor command should show 10 callbacks every 1 second
+and then a pause of 10 seconds.
+
+NOTE arguments are
+
+number of records to modify per iteration
+seconds to wait between interations
+a mask for the states to enter
+    0x1  set to null link
+    0x2  set to local CP link
+    0x4  set to remote CP link
+    0x8  set to PP link
+

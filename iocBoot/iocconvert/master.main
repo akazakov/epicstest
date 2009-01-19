@@ -1,0 +1,5 @@
+dbLoadDatabase("../../dbd/convert.dbd",0,0)
+convert_registerRecordDeviceDriver(pdbbase)
+dbLoadRecords("../../convertApp/Db/convertMaster.db",0)
+dbLoadRecords("../../convertApp/Db/convertMasterENUM.db",0)
+iocInit()

@@ -1,0 +1,15 @@
+# Example vxWorks startup file
+< cdCommands
+< ../nfsCommands
+
+cd topbin
+ld < convert.munch
+
+cd top
+dbLoadDatabase("dbd/convert.dbd")
+convert_registerRecordDeviceDriver(pdbbase)
+dbLoadRecords("convertApp/Db/convertMaster.db")
+dbLoadRecords("convertApp/Db/convertMasterENUM.db")
+
+cd startup
+iocInit

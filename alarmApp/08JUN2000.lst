@@ -1,0 +1,121 @@
+test of global alarm acknowledge
+2 
+pv: mrkai status=5 severity=2 ackt=0 acks=2 value=2.00
+caputacks mrkai 1
+pv: mrkai status=5 severity=2 ackt=0 acks=2 value=2.00
+10 
+pv: mrkai status=0 severity=0 ackt=0 acks=0 value=10.00
+2 
+pv: mrkai status=5 severity=2 ackt=0 acks=2 value=2.00
+caputacks mrkai 2
+pv: mrkai status=5 severity=2 ackt=0 acks=0 value=2.00
+10 
+pv: mrkai status=0 severity=0 ackt=0 acks=0 value=10.00
+4 
+pv: mrkai status=6 severity=1 ackt=0 acks=1 value=4.00
+caputacks mrkai 1
+pv: mrkai status=6 severity=1 ackt=0 acks=0 value=4.00
+10 
+pv: mrkai status=0 severity=0 ackt=0 acks=0 value=10.00
+4 
+pv: mrkai status=6 severity=1 ackt=0 acks=1 value=4.00
+caputacks mrkai 2
+pv: mrkai status=6 severity=1 ackt=0 acks=0 value=4.00
+10 
+pv: mrkai status=0 severity=0 ackt=0 acks=0 value=10.00
+10 
+pv: mrkai status=0 severity=0 ackt=0 acks=0 value=10.00
+caputacks mrkai 1
+pv: mrkai status=0 severity=0 ackt=0 acks=0 value=10.00
+10 
+pv: mrkai status=0 severity=0 ackt=0 acks=0 value=10.00
+10 
+pv: mrkai status=0 severity=0 ackt=0 acks=0 value=10.00
+caputacks mrkai 2
+pv: mrkai status=0 severity=0 ackt=0 acks=0 value=10.00
+10 
+pv: mrkai status=0 severity=0 ackt=0 acks=0 value=10.00
+16 
+pv: mrkai status=4 severity=1 ackt=0 acks=1 value=16.00
+caputacks mrkai 1
+pv: mrkai status=4 severity=1 ackt=0 acks=0 value=16.00
+10 
+pv: mrkai status=0 severity=0 ackt=0 acks=0 value=10.00
+16 
+pv: mrkai status=4 severity=1 ackt=0 acks=1 value=16.00
+caputacks mrkai 2
+pv: mrkai status=4 severity=1 ackt=0 acks=0 value=16.00
+10 
+pv: mrkai status=0 severity=0 ackt=0 acks=0 value=10.00
+18 
+pv: mrkai status=3 severity=2 ackt=0 acks=2 value=18.00
+caputacks mrkai 1
+pv: mrkai status=3 severity=2 ackt=0 acks=2 value=18.00
+10 
+pv: mrkai status=0 severity=0 ackt=0 acks=0 value=10.00
+18 
+pv: mrkai status=3 severity=2 ackt=0 acks=2 value=18.00
+caputacks mrkai 2
+pv: mrkai status=3 severity=2 ackt=0 acks=0 value=18.00
+10 
+pv: mrkai status=0 severity=0 ackt=0 acks=0 value=10.00
+2 
+pv: mrkai status=5 severity=2 ackt=1 acks=2 value=2.00
+caputacks mrkai 1
+pv: mrkai status=5 severity=2 ackt=1 acks=2 value=2.00
+10 
+pv: mrkai status=0 severity=0 ackt=1 acks=2 value=10.00
+2 
+pv: mrkai status=5 severity=2 ackt=1 acks=2 value=2.00
+caputacks mrkai 2
+pv: mrkai status=5 severity=2 ackt=1 acks=0 value=2.00
+10 
+pv: mrkai status=0 severity=0 ackt=1 acks=0 value=10.00
+4 
+pv: mrkai status=6 severity=1 ackt=1 acks=1 value=4.00
+caputacks mrkai 1
+pv: mrkai status=6 severity=1 ackt=1 acks=0 value=4.00
+10 
+pv: mrkai status=0 severity=0 ackt=1 acks=0 value=10.00
+4 
+pv: mrkai status=6 severity=1 ackt=1 acks=1 value=4.00
+caputacks mrkai 2
+pv: mrkai status=6 severity=1 ackt=1 acks=0 value=4.00
+10 
+pv: mrkai status=0 severity=0 ackt=1 acks=0 value=10.00
+10 
+pv: mrkai status=0 severity=0 ackt=1 acks=0 value=10.00
+caputacks mrkai 1
+pv: mrkai status=0 severity=0 ackt=1 acks=0 value=10.00
+10 
+pv: mrkai status=0 severity=0 ackt=1 acks=0 value=10.00
+10 
+pv: mrkai status=0 severity=0 ackt=1 acks=0 value=10.00
+caputacks mrkai 2
+pv: mrkai status=0 severity=0 ackt=1 acks=0 value=10.00
+10 
+pv: mrkai status=0 severity=0 ackt=1 acks=0 value=10.00
+16 
+pv: mrkai status=4 severity=1 ackt=1 acks=1 value=16.00
+caputacks mrkai 1
+pv: mrkai status=4 severity=1 ackt=1 acks=0 value=16.00
+10 
+pv: mrkai status=0 severity=0 ackt=1 acks=0 value=10.00
+16 
+pv: mrkai status=4 severity=1 ackt=1 acks=1 value=16.00
+caputacks mrkai 2
+pv: mrkai status=4 severity=1 ackt=1 acks=0 value=16.00
+10 
+pv: mrkai status=0 severity=0 ackt=1 acks=0 value=10.00
+18 
+pv: mrkai status=3 severity=2 ackt=1 acks=2 value=18.00
+caputacks mrkai 1
+pv: mrkai status=3 severity=2 ackt=1 acks=2 value=18.00
+10 
+pv: mrkai status=0 severity=0 ackt=1 acks=2 value=10.00
+18 
+pv: mrkai status=3 severity=2 ackt=1 acks=2 value=18.00
+caputacks mrkai 2
+pv: mrkai status=3 severity=2 ackt=1 acks=0 value=18.00
+10 
+pv: mrkai status=0 severity=0 ackt=1 acks=0 value=10.00

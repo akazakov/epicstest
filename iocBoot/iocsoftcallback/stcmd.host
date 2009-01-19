@@ -1,0 +1,5 @@
+dbLoadDatabase("../../dbd/common.dbd",0,0)
+common_registerRecordDeviceDriver(pdbbase); 
+dbLoadRecords("../../db/devSoftAsyn.db")
+#dbLoadRecords("devCalcout.db")
+iocInit();

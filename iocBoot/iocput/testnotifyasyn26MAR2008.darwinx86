@@ -1,0 +1,98 @@
+#test all asynchronous
+dbtpn "mrkhead","2"
+epicsThreadSleep(7.0)
+dbtpn: Process mrkhead
+Starting asynchronous processing: mrkhead
+Completed asynchronous processing: mrkhead
+cbLow: Process mrkfanout
+cbLow: Process mrk11
+Starting asynchronous processing: mrk11
+cbLow: Process mrk21
+Starting asynchronous processing: mrk21
+Completed asynchronous processing: mrk11
+cbLow: Process mrk12
+cbLow: Process mrk13
+Starting asynchronous processing: mrk13
+Completed asynchronous processing: mrk21
+cbLow: Process mrk22
+cbLow: Process mrk23
+Starting asynchronous processing: mrk23
+Completed asynchronous processing: mrk13
+Completed asynchronous processing: mrk23
+dbtpnCallback: success record=mrkhead
+#test mrkhead syn and rest asyn
+dbpf "mrkhead.DISV","0"
+DBR_SHORT:          0         0x0                 
+dbtpn "mrkhead","2"
+epicsThreadSleep(5.0)
+dbtpn: Process mrkhead
+dbtpn: Process mrkfanout
+dbtpn: Process mrk11
+Starting asynchronous processing: mrk11
+dbtpn: Process mrk21
+Starting asynchronous processing: mrk21
+Completed asynchronous processing: mrk11
+cbLow: Process mrk12
+cbLow: Process mrk13
+Starting asynchronous processing: mrk13
+Completed asynchronous processing: mrk21
+cbLow: Process mrk22
+cbLow: Process mrk23
+Starting asynchronous processing: mrk23
+Completed asynchronous processing: mrk13
+Completed asynchronous processing: mrk23
+dbtpnCallback: success record=mrkhead
+#test caching dbPutField with dbtpn
+dbpf "mrk11.DISV","0" 
+DBR_SHORT:          0         0x0                 
+dbtpn "mrk11","2"
+epicsThreadSleep(.01)
+dbtpn: Process mrk11
+dbtpn: Process mrk12
+dbtpn: Process mrk13
+Starting asynchronous processing: mrk13
+dbpf "mrk13","2"
+_main_: Active mrk13
+DBR_DOUBLE:         2                   
+epicsThreadSleep(5.0)
+Completed asynchronous processing: mrk13
+dbtpnCallback: success record=mrk11
+scanOnce: Process mrk13
+Starting asynchronous processing: mrk13
+Completed asynchronous processing: mrk13
+#test caching dbPutNotify
+dbpf "mrk13","5"
+_main_: Process mrk13
+Starting asynchronous processing: mrk13
+DBR_DOUBLE:         5                   
+dbtpn "mrk11","5"
+epicsThreadSleep(5.0)
+dbtpn: Process mrk11
+dbtpn: Process mrk12
+dbtpnCallback: success record=mrk11
+Completed asynchronous processing: mrk13
+scanOnce: Process mrk13
+Starting asynchronous processing: mrk13
+Completed asynchronous processing: mrk13
+#test for same record repeated
+dbtpn "mrkseq","1"
+epicsThreadSleep(30.0)
+dbtpn: Process mrkseq
+cbLow: Process mrk11
+cbLow: Process mrk12
+cbLow: Process mrk13
+Starting asynchronous processing: mrk13
+Completed asynchronous processing: mrk13
+cbLow: Process mrk21
+Starting asynchronous processing: mrk21
+Completed asynchronous processing: mrk21
+cbLow: Process mrk22
+cbLow: Process mrk23
+Starting asynchronous processing: mrk23
+Completed asynchronous processing: mrk23
+cbLow: Process mrk11
+cbLow: Process mrk12
+cbLow: Process mrk13
+Starting asynchronous processing: mrk13
+Completed asynchronous processing: mrk13
+dbtpnCallback: success record=mrkseq

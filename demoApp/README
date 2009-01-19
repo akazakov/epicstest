@@ -1,0 +1,10 @@
+Load two iocs.
+
+  on vxWorks        on host
+st.demo         ../../bin/<arch>/common demo.main
+st.demoRemote   ../../bin/<arch>/common demoRemote.main
+
+Run
+  medm  demo.adl
+
+NOTE: dm2k will crash on the lower three related panels.

@@ -1,0 +1,2 @@
+startup = "../../iocBoot/iocput"
+appbin = "../../bin/mv167"

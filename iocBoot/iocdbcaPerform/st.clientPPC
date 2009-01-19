@@ -1,0 +1,14 @@
+# Example vxWorks startup file
+< cdCommandsPPC
+< ../nfsCommands
+cd topbin
+ld < commonVx.munch
+
+cd top
+dbLoadDatabase("dbd/commonVx.dbd")
+commonVx_registerRecordDeviceDriver(pdbbase)
+dbLoadDatabase("dbcaPerformApp/Db/client.db")
+#dbLoadRecords("dbcaPerformApp/Db/timeStamp.db")
+
+cd startup
+iocInit

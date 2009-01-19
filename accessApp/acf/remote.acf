@@ -1,0 +1,23 @@
+UAG(uag1) {anj,jhill}
+HAG(hag1) {phoebus,mercury,uranus}
+ASG(DEFAULT) {
+	RULE(1,READ) 
+}
+ASG(allowRestart) {
+	RULE(1,WRITE) {
+		UAG(uag1)
+	}
+}
+ASG(protected) {
+	INPA(mrkLOCALremoteAccess)
+	RULE(1,READ) {
+		CALC("a>=1")
+		UAG(uag1)
+		HAG(hag1)
+	}
+	RULE(0,WRITE) {
+		CALC("a>=2")
+		UAG(uag1)
+		HAG(hag1)
+	}
+}

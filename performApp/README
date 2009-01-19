@@ -1,0 +1,17 @@
+This is a record processing performance test
+
+1. Boot the IOC
+
+   on vxWorks boot with CMDLINE set to st.cmd
+   on RTEMS boot with CMDLINE set to perform.main
+   on others run ../../bin/<arch>/perform perform.main
+
+2. Run the timing test
+
+   on vxWorks execute
+      sp timeproc,"mrkfanout",1000
+
+   on others execute
+      timeproc,"mrkfanout",1000
+
+See the file TIMING for comparison data.

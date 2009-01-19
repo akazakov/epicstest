@@ -1,0 +1,134 @@
+
+file {
+	name="/home/phoebus/ANJ/epics/mrkSoftTest/demoApp/adl/valuater.adl"
+	version=030101
+}
+display {
+	object {
+		x=10
+		y=29
+		width=299
+		height=105
+	}
+	clr=0
+	bclr=57
+	cmap=""
+	gridSpacing=5
+	gridOn=0
+	snapToGrid=0
+}
+"color map" {
+	ncolors=75
+	colors {
+		ffffff,
+		ececec,
+		dadada,
+		c8c8c8,
+		bbbbbb,
+		aeaeae,
+		9e9e9e,
+		919191,
+		858585,
+		787878,
+		696969,
+		5a5a5a,
+		464646,
+		2d2d2d,
+		000000,
+		00ff00,
+		37ff00,
+		70ff00,
+		a5ff00,
+		d7ff00,
+		ffff00,
+		ffe300,
+		ffc700,
+		ffab00,
+		ff8f00,
+		ff7300,
+		ff5700,
+		ff3b00,
+		ff1e00,
+		ff0000,
+		ff0000,
+		ff001e,
+		ff003b,
+		ff0057,
+		ff0073,
+		ff008f,
+		ff00ab,
+		ff00c7,
+		ff00e3,
+		ff00ff,
+		ff00ff,
+		e300ff,
+		c700ff,
+		ab00ff,
+		8f00ff,
+		7300ff,
+		5800ff,
+		3b00ff,
+		3e00ff,
+		0000ff,
+		0000ff,
+		001eff,
+		003bff,
+		0057ff,
+		0073ff,
+		008fff,
+		00abff,
+		00c7ff,
+		00e3ff,
+		00ffff,
+		00ffff,
+		00ffe3,
+		008b00,
+		aa0000,
+		8fd101,
+		00f100,
+		46e81000,
+		000348,
+		4371c00c,
+		520000,
+		000354,
+		43735000,
+		560000,
+		300342,
+		43446000,
+	}
+}
+indicator {
+	object {
+		x=11
+		y=62
+		width=273
+		height=21
+	}
+	monitor {
+		chan="mrkai2"
+		clr=0
+		bclr=57
+	}
+	label="outline"
+	clrmod="alarm"
+	limits {
+	}
+}
+valuator {
+	object {
+		x=11
+		y=20
+		width=273
+		height=39
+	}
+	control {
+		chan="mrkai2"
+		clr=0
+		bclr=13
+	}
+	label="limits"
+	clrmod="alarm"
+	dPrecision=1.000000
+	limits {
+	}
+}

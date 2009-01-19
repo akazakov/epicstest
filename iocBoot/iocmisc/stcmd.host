@@ -1,0 +1,7 @@
+dbLoadDatabase("../../dbd/misc.dbd")
+misc_registerRecordDeviceDriver(pdbbase)
+dbLoadRecords("../../miscApp/Db/testLinearConvert.db")
+epicsEnvSet("EPICS_IOC_LOG_PORT","7004")
+epicsEnvSet("EPICS_IOC_LOG_INET","164.54.8.12")
+iocLogInit
+iocInit

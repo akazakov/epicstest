@@ -1,0 +1,27 @@
+OLD
+
+no CA client
+memory alloc 1972792
+18434 records/sec
+
+CA client
+memory alloc 2109100
+12341 records/sec
+78% idle
+
+
+NEW
+
+no CA client
+memory alloc 1548232
+17286 records/sec
+
+CA client
+memory alloc 1680480
+12060 records/sec
+78% idle
+
+
+changeLinkPerform
+
+3 milliseconds per iteration

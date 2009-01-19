@@ -1,0 +1,148 @@
+This directory contains a database and command files for testing:
+
+caching puts
+dbPutNotify
+
+
+SHORT INSTRUCTIONS:
+
+NOTE: Since output is genbereted from multiple threads it is not possible
+      to just redirect output. The ouput must be captured manually. Sorry!!
+
+1) boot ioc with st.cmd  resp.  ../../bin/<arch>/common put.main
+2) On host ussue
+
+   /bin/rm temp*
+
+   On console issue
+
+   < init
+   < p2sec
+   # at this point be prepared to capture output from next command
+   < testcache
+   # put output of previous command into temp
+
+   < p0sec
+   # at this point be prepared to capture output from next command
+   < testnotifysync
+   # put output of previous command into temp1
+   < p2sec
+   # at this point be prepared to capture output from next command
+   < testnotifyasyn
+   # put output of previous command into temp2
+
+
+3) On unix issue the commands
+   diff temp testcache15SEP2004
+   diff temp1 testnotifysync15SEP2004
+   diff temp2 testnotifyasyn15SEP2004
+
+   No differences should be found
+
+   NOTE: The test can also be run on a non vxWorks system.
+         In this case diff will have non-essential differences
+4) Run the command 
+   ../../bin/<arch>/ezcatest <retrys> <continuous> < ezcaNotify
+
+   With retrys<=10 should get errors almost always
+   With retrys>=20 almost never
+   continuous can be (0,1) (run once, run continuous)
+
+5) Run the duration test. It should run forewver without the ioc crashing.
+   On the workstation issue the command
+
+   startDuration.pl startDuration
+
+
+Consult the Application Developers Guide for details.
+
+The complete set of test files are:
+
+cachenotify.db		Test database file.
+st.cmdmv167		vxWorks startup file
+init			An initialization file
+p0sec			A file to set asyn records to 0 wait
+p2sec			A file to set asyn records to 2 second wait
+testcache		Script to test caching
+testcache28Jun94	Results of running testcache
+testnotify		Script to test put notify
+testnotify28Jun94	Results of running testnotify
+ezcaNotify		Pv for ezcatest
+ezcaNotifySetTPRO	vx script to set TPRO on all records for ezcaNotify
+			NOTE: turn off periodically scanned records
+				dbpf "m_bpm3:event_57.SCAN","0"
+
+
+The test database has the following structure
+
+
+		  	|->mrk11 -flnk> mrk12 -out> mrk13
+mrkhead -flnk> mrkfanout|
+		  	|->mrk21 -flnk> mrk22 -out> mrk23
+
+
+mrkhead, mrk11, mrk13, mrk21, mrk23 all use Test Asyn for their device
+support. The DISV field determines the number of seconds to wait for
+asyn completion. In particular setting DISV=0 make them synchronous.
+
+mrk12 and mrk22 are soft analog output records.
+
+The following are utility vxWorks command files.
+
+
+init
+	sets TPRO true in all records.
+	sets DISA=-1 in all asyn records. This makes sure records are enabled.
+
+p0sec
+	sets DISV=0 in all asyn records
+
+p2sec
+	sets DISV=2 in all asyn records.
+
+
+The following are scripts to be run on vxWorks:
+
+testcache
+testnotify
+
+The results of running  these tests should be identical to the files:
+
+testcache28Jun94
+testnotify28Jun94
+
+Lets briefly describe each test script
+
+testcache
+
+Two tests are performed. The first tests that dbPutField caches.
+It does this by issuing two consecutive puts to mrk11 and then waiting 5 
+seconds. It also sets mrk13 to wait 3 seconds for asyn completion.
+What is expected is that mrk11 and all chained records will process
+twice except mrk13. mrk13 only processes once because it is found active
+as a result of the first dbPutLink directed to it.
+
+The second test tests that dbPutLink caches if it finds a record active
+because a dbPutField was issued. This is done by first setting mrk11 to
+be synchronous. It then does a dbpf to mrk13 followed by a dbpf to mrk11.
+When mrk13 completes asynchronous processing it is supposed to process
+again.
+
+testnotify
+
+This script makes the following tests:
+1) Set all records to be synchronous and executes dbtpn "mrkhead".
+   What is supposed to happen is that all records process synchronously
+   and the notify callback routine is called.
+2) The asyn records are set to delay 2 seconds before completion.
+   dbtpn "mrkhead" is then executed. The callback is supposed to be called 
+   after all records complete asynchronous processing.
+3) mrkhead is set synchronous and the other asyn record left at a 2 sec delay.
+   Again the callback is called after all records complete asyn phase.
+4) Tests that a dbPutField directed to a record processed because of dbtpn
+   caches. Thus after the dbptn callback occurs mrk13 should process an
+   extra time.
+5) This tests that, if a record is active due to a dbPutField,
+   when a request is made to process it because of a put notify, then
+   after the record completes processing, the put notify will be restarted
+   from the beginning.

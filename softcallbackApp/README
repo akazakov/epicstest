@@ -1,0 +1,79 @@
+Test of dbCaPutCallback
+
+On vxWorks boot from iocBoot/iocsoftcallback/st.cmd
+On RTEMS boot common with CMDLINE iocBoot/iocsoftcallback/stcmd.host
+On others
+    cd iocBoot/iocsoftcallback
+        ../../bin/<arch>/common stcmd.host
+
+In another window
+
+testDevAsyn
+
+While the test is running you should see messages on the IOC console like:
+
+[...]
+Starting asynchronous processing: mrk:bodelay
+Completed asynchronous processing: mrk:bodelay
+Starting asynchronous processing: mrk:bodelay
+Completed asynchronous processing: mrk:bodelay
+Starting asynchronous processing: mrk:calcoutdelay
+Completed asynchronous processing: mrk:calcoutdelay
+Starting asynchronous processing: mrk:calcoutdelay
+Completed asynchronous processing: mrk:calcoutdelay
+[...]
+
+while the client should just print:
+
+[...]
+Testing bo record ...
+testDevAsyn OK
+Testing calcout record ...
+testDevAsyn OK
+[...]
+
+
+Details:
+
+
+The following device support modules are tested:
+
+devAoSoftCallback
+devBoSoftCallback
+devCalcoutSoftCallback
+devLoSoftCallback
+devMbboSoftCallback
+devMbboDirectSoftCallback
+devSoSoftCallback
+
+For each three records are present. They are all similar. The ao records are:
+
+record(ao,"mrk:aosyn")
+{
+    field(OUT,"mrk:aoasyn PP")
+}
+record(ao,"mrk:aoasyn")
+{
+    field(DTYP,"Async Soft Channel")
+    field(OUT,"mrk:aodelay CA")
+}
+record(ao,"mrk:aodelay")
+{
+    field(DTYP,"Test Asyn")
+    field(DISV,"1")
+}
+
+When a value is written to mrk:aosyn the following happens:
+
+mrk:aosyn is processed and writes a value to mrk:aoasyn.
+mrk:aoasyn processes. It does a CA put callback to mrk:aodelay.
+mrk:aodelay has a delay of 1 second. Thus at the end we expect.
+
+All three records will have the same value.
+
+The time stamps for mrk:aoasyn and mrk:aodelay will be 1 seconds after
+the time stamp for mrk:aosyn.
+
+A Channel access client testPutCallback has been created to
+check the above behavior. The shell script testDevAsyn jsut calls
+it for each set of three records.

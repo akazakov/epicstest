@@ -1,0 +1,4 @@
+# This is a minimal access configuration file
+ASG(DEFAULT) {
+	RULE(0,READ)
+}

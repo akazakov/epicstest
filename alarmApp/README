@@ -1,0 +1,29 @@
+This is a test of alarm acknowledgement
+
+To start the ioc
+
+On vxWorks boot from iocBoot/iocalarm/st.cmd
+On RTEMS boot common with CMDLINE iocBoot/iocalarm/stcmd.host
+On others
+    cd iocBoot/iocalarm
+    ../../bin/<arch>/common stcmd.host
+
+To test boot iocalarm and then
+
+testAlarmAck.pl mrkai temp.lst
+
+Then
+
+diff temp.lst 08JUN2000.lst
+
+There should be no differences.
+
+There is also a test for retrieving the record type name
+
+../bin/<arch>/cagetclassname mrkai
+
+
+It should print
+
+pv: mrkai classname ai
+

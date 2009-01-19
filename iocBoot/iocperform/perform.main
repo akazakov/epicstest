@@ -1,0 +1,4 @@
+dbLoadDatabase("../../dbd/common.dbd")
+perform_registerRecordDeviceDriver(pdbbase)
+dbLoadRecords("../../performApp/Db/perform.db")
+iocInit

@@ -1,0 +1,4 @@
+dbLoadDatabase("../../dbd/linkinfo.dbd",0,0)
+linkinfo_registerRecordDeviceDriver(pdbbase)
+dbLoadRecords("../../linkinfoApp/Db/linkinfoRemote.db",0)
+iocInit

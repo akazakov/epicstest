@@ -1,0 +1,23 @@
+This directory contains a files for testing dbCa.
+
+        on vxWorks                              on host
+
+start local with stlocal.cmd      ../../bin/<arch>/linkinfo stcmdlocal.host
+start remote with stremote.cmd    ../../bin/<arch>/linkinfo stcmdremote.host
+
+
+On local issue the command        On local issue the command
+< localCommands > tempLocal       < localCommands
+                                  and drag/drop result into file named tempLocal
+
+On remote issue the command       On remote issue the command
+< remoteCommands > tempRemote     < remoteCommands
+                                  and drag/drop result into file named tempRemote
+
+Then
+
+diff local18OCT2004 tempLocal     diff localNONvxWorks tempLocal    
+diff remote18OCT2004 tempRemote   diff remoteNONvxWorks tempRemote
+
+
+The only differences should be the date/time and sevr.

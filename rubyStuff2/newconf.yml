@@ -1,0 +1,40 @@
+:default: &default
+  debug_level: 5
+
+:paths: &paths
+  topDir: /Users/tyoma/epics/soft-test
+  binDir: bin
+  referenceDir: reference
+
+:defaultIOC: &defaultIOC
+   <<: *paths
+   ioc: common
+
+:defaultIOCSSH: &defaultIOCSSH
+   <<: *defaultIOC
+   host: localhost
+   user: tyoma
+   type: SSH
+
+:defaultCommand: &defaultCommand
+   <<: *paths
+   type: SH
+
+:defaultCommandSSH: &defaultCommandSSH
+   <<: *paths
+   type: SSH
+   #host: burdock.linac.kek.jp
+   host: localhost
+   user: tyoma
+
+MyTestCase: 
+   <<: *default
+   <<: *paths
+   IOC0:
+       <<: *defaultIOCSSH
+       bootDir: iocBoot/iocalarm
+       cmd: stcmd.host
+   COMMAND0:
+       <<: *defaultCommandSSH
+   COMMAND1:
+      <<: *defaultCommand

@@ -1,0 +1,2 @@
+nfsAuthUnixSet("phoebus", 245, 55)
+nfsMount("phoebus","/home/phoebus3/","/home/phoebus3")

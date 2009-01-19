@@ -1,0 +1,14 @@
+#test synchronous
+dbtpn "mrkhead","2"
+value = 0 = 0x0
+epicsThreadSleep(1.0)
+dbtpn: Process mrkhead
+dbtpn: Process mrkfanout
+dbtpn: Process mrk11
+dbtpn: Process mrk12
+dbtpn: Process mrk13
+dbtpn: Process mrk21
+dbtpn: Process mrk22
+dbtpn: Process mrk23
+dbtpnCallback: success record=mrkhead
+value = 0 = 0x0

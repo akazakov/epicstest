@@ -1,0 +1,6 @@
+dbLoadDatabase("../../dbd/linkinfo.dbd",0,0)
+linkinfo_registerRecordDeviceDriver(pdbbase)
+dbLoadRecords("../../demoApp/Db/demo.db",0)
+dbLoadRecords("../../linkinfoApp/Db/linkinfoLocal.db",0)
+iocInit
+dbpf "mrkbi1","1"

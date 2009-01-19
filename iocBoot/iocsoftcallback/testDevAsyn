@@ -1,0 +1,9 @@
+#!/bin/sh
+testPutCallback=../../bin/${EPICS_HOST_ARCH}/testPutCallback
+echo "Testing bo record ..."; $testPutCallback mrk:bosyn mrk:boasyn mrk:bodelay 1 0
+echo "Testing ao record ..."; $testPutCallback mrk:aosyn mrk:aoasyn mrk:aodelay 1 0
+echo "Testing calcout record ..."; $testPutCallback mrk:calcoutsyn mrk:calcoutasyn mrk:calcoutdelay 1 0
+echo "Testing longout record ..."; $testPutCallback mrk:longoutsyn mrk:longoutasyn mrk:longoutdelay 1 0
+echo "Testing mbbo record ..."; $testPutCallback mrk:mbbosyn mrk:mbboasyn mrk:mbbodelay 1 0
+echo "Testing mbboDirect record ..."; $testPutCallback mrk:mbboDirectsyn mrk:mbboDirectasyn mrk:mbboDirectdelay 1 0
+echo "Testing stringout record ..."; $testPutCallback mrk:stringoutsyn mrk:stringoutasyn mrk:stringoutdelay 1 0

@@ -1,0 +1,2196 @@
+file {
+	name="timeText.dl"
+}
+display {
+	magic="305419896"
+	majv="1"
+	mnrv="16"
+	ndyn="0"
+	npc="100"
+	nstr="1"
+	nmon="100"
+	nctrl="0"
+	nplot="0"
+	nrd="0"
+	object {
+		x="0"
+		y="0"
+		width="895"
+		height="308"
+	}
+	clr="0"
+	bclr="57"
+	nwords_dspy="1891"
+	nwords_sta="0"
+	nwords_cmap="153"
+	odyn="891"
+	osta="891"
+	omon="891"
+	octrl="1891"
+	oplot="1891"
+	ord="1891"
+	opc="44"
+	ostr="734"
+	ocmap="738"
+	style="solid"
+	fill="outline"
+	field_pad1="0"
+	width="0"
+	clrmod="static"
+	vismod="static"
+	pv=""
+	cmap=""
+}
+"<<color map>>" {
+	ncolors="75"
+	dl_color {
+		r="255"
+		g="255"
+		b="255"
+		inten="255"
+	}
+	dl_color {
+		r="236"
+		g="236"
+		b="236"
+		inten="0"
+	}
+	dl_color {
+		r="218"
+		g="218"
+		b="218"
+		inten="0"
+	}
+	dl_color {
+		r="200"
+		g="200"
+		b="200"
+		inten="0"
+	}
+	dl_color {
+		r="187"
+		g="187"
+		b="187"
+		inten="0"
+	}
+	dl_color {
+		r="174"
+		g="174"
+		b="174"
+		inten="0"
+	}
+	dl_color {
+		r="158"
+		g="158"
+		b="158"
+		inten="0"
+	}
+	dl_color {
+		r="145"
+		g="145"
+		b="145"
+		inten="0"
+	}
+	dl_color {
+		r="133"
+		g="133"
+		b="133"
+		inten="0"
+	}
+	dl_color {
+		r="120"
+		g="120"
+		b="120"
+		inten="0"
+	}
+	dl_color {
+		r="105"
+		g="105"
+		b="105"
+		inten="0"
+	}
+	dl_color {
+		r="90"
+		g="90"
+		b="90"
+		inten="0"
+	}
+	dl_color {
+		r="70"
+		g="70"
+		b="70"
+		inten="0"
+	}
+	dl_color {
+		r="45"
+		g="45"
+		b="45"
+		inten="0"
+	}
+	dl_color {
+		r="0"
+		g="0"
+		b="0"
+		inten="0"
+	}
+	dl_color {
+		r="0"
+		g="255"
+		b="0"
+		inten="0"
+	}
+	dl_color {
+		r="55"
+		g="255"
+		b="0"
+		inten="0"
+	}
+	dl_color {
+		r="112"
+		g="255"
+		b="0"
+		inten="0"
+	}
+	dl_color {
+		r="165"
+		g="255"
+		b="0"
+		inten="0"
+	}
+	dl_color {
+		r="215"
+		g="255"
+		b="0"
+		inten="0"
+	}
+	dl_color {
+		r="255"
+		g="255"
+		b="0"
+		inten="0"
+	}
+	dl_color {
+		r="255"
+		g="227"
+		b="0"
+		inten="0"
+	}
+	dl_color {
+		r="255"
+		g="199"
+		b="0"
+		inten="0"
+	}
+	dl_color {
+		r="255"
+		g="171"
+		b="0"
+		inten="0"
+	}
+	dl_color {
+		r="255"
+		g="143"
+		b="0"
+		inten="0"
+	}
+	dl_color {
+		r="255"
+		g="115"
+		b="0"
+		inten="0"
+	}
+	dl_color {
+		r="255"
+		g="87"
+		b="0"
+		inten="0"
+	}
+	dl_color {
+		r="255"
+		g="59"
+		b="0"
+		inten="0"
+	}
+	dl_color {
+		r="255"
+		g="30"
+		b="0"
+		inten="0"
+	}
+	dl_color {
+		r="255"
+		g="0"
+		b="0"
+		inten="0"
+	}
+	dl_color {
+		r="255"
+		g="0"
+		b="0"
+		inten="0"
+	}
+	dl_color {
+		r="255"
+		g="0"
+		b="30"
+		inten="0"
+	}
+	dl_color {
+		r="255"
+		g="0"
+		b="59"
+		inten="0"
+	}
+	dl_color {
+		r="255"
+		g="0"
+		b="87"
+		inten="0"
+	}
+	dl_color {
+		r="255"
+		g="0"
+		b="115"
+		inten="0"
+	}
+	dl_color {
+		r="255"
+		g="0"
+		b="143"
+		inten="0"
+	}
+	dl_color {
+		r="255"
+		g="0"
+		b="171"
+		inten="0"
+	}
+	dl_color {
+		r="255"
+		g="0"
+		b="199"
+		inten="0"
+	}
+	dl_color {
+		r="255"
+		g="0"
+		b="227"
+		inten="0"
+	}
+	dl_color {
+		r="255"
+		g="0"
+		b="255"
+		inten="0"
+	}
+	dl_color {
+		r="255"
+		g="0"
+		b="255"
+		inten="0"
+	}
+	dl_color {
+		r="227"
+		g="0"
+		b="255"
+		inten="0"
+	}
+	dl_color {
+		r="199"
+		g="0"
+		b="255"
+		inten="0"
+	}
+	dl_color {
+		r="171"
+		g="0"
+		b="255"
+		inten="0"
+	}
+	dl_color {
+		r="143"
+		g="0"
+		b="255"
+		inten="0"
+	}
+	dl_color {
+		r="115"
+		g="0"
+		b="255"
+		inten="0"
+	}
+	dl_color {
+		r="88"
+		g="0"
+		b="255"
+		inten="0"
+	}
+	dl_color {
+		r="59"
+		g="0"
+		b="255"
+		inten="0"
+	}
+	dl_color {
+		r="62"
+		g="0"
+		b="255"
+		inten="0"
+	}
+	dl_color {
+		r="0"
+		g="0"
+		b="255"
+		inten="0"
+	}
+	dl_color {
+		r="0"
+		g="0"
+		b="255"
+		inten="0"
+	}
+	dl_color {
+		r="0"
+		g="30"
+		b="255"
+		inten="0"
+	}
+	dl_color {
+		r="0"
+		g="59"
+		b="255"
+		inten="0"
+	}
+	dl_color {
+		r="0"
+		g="87"
+		b="255"
+		inten="0"
+	}
+	dl_color {
+		r="0"
+		g="115"
+		b="255"
+		inten="0"
+	}
+	dl_color {
+		r="0"
+		g="143"
+		b="255"
+		inten="0"
+	}
+	dl_color {
+		r="0"
+		g="171"
+		b="255"
+		inten="255"
+	}
+	dl_color {
+		r="0"
+		g="199"
+		b="255"
+		inten="0"
+	}
+	dl_color {
+		r="0"
+		g="227"
+		b="255"
+		inten="0"
+	}
+	dl_color {
+		r="0"
+		g="255"
+		b="255"
+		inten="0"
+	}
+	dl_color {
+		r="0"
+		g="255"
+		b="255"
+		inten="0"
+	}
+	dl_color {
+		r="0"
+		g="255"
+		b="227"
+		inten="0"
+	}
+	dl_color {
+		r="0"
+		g="139"
+		b="0"
+		inten="0"
+	}
+	dl_color {
+		r="170"
+		g="0"
+		b="0"
+		inten="0"
+	}
+	dl_color {
+		r="143"
+		g="209"
+		b="1"
+		inten="0"
+	}
+	dl_color {
+		r="226"
+		g="230"
+		b="219"
+		inten="0"
+	}
+	dl_color {
+		r="248"
+		g="255"
+		b="238"
+		inten="0"
+	}
+	dl_color {
+		r="97"
+		g="65"
+		b="0"
+		inten="0"
+	}
+	dl_color {
+		r="111"
+		g="81"
+		b="13"
+		inten="0"
+	}
+	dl_color {
+		r="125"
+		g="101"
+		b="36"
+		inten="0"
+	}
+	dl_color {
+		r="137"
+		g="126"
+		b="61"
+		inten="0"
+	}
+	dl_color {
+		r="154"
+		g="145"
+		b="78"
+		inten="0"
+	}
+	dl_color {
+		r="173"
+		g="169"
+		b="99"
+		inten="0"
+	}
+	dl_color {
+		r="185"
+		g="191"
+		b="118"
+		inten="0"
+	}
+	dl_color {
+		r="200"
+		g="209"
+		b="137"
+		inten="0"
+	}
+}
+"text update" {
+	object {
+		x="6"
+		y="7"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc0"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="6"
+		y="37"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc1"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="8"
+		y="66"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc2"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="8"
+		y="96"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc3"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="8"
+		y="126"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc4"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="8"
+		y="156"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc5"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="10"
+		y="185"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc6"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="10"
+		y="215"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc7"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="11"
+		y="244"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc8"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="11"
+		y="274"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc9"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="96"
+		y="8"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc0a0"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="96"
+		y="38"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc1a0"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="98"
+		y="67"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc2a0"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="98"
+		y="97"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc3a0"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="98"
+		y="127"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc4a0"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="98"
+		y="157"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc5a0"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="100"
+		y="186"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc6a0"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="100"
+		y="216"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc7a0"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="101"
+		y="245"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc8a0"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="101"
+		y="275"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc9a0"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="183"
+		y="7"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc0a1"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="183"
+		y="37"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc1a1"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="185"
+		y="66"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc2a1"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="185"
+		y="96"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc3a1"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="185"
+		y="126"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc4a1"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="185"
+		y="156"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc5a1"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="187"
+		y="185"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc6a1"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="187"
+		y="215"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc7a1"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="188"
+		y="244"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc8a1"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="188"
+		y="274"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc9a1"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="273"
+		y="8"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc0a2"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="273"
+		y="38"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc1a2"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="275"
+		y="67"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc2a2"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="275"
+		y="97"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc3a2"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="275"
+		y="127"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc4a2"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="275"
+		y="157"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc5a2"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="277"
+		y="186"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc6a2"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="277"
+		y="216"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc7a2"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="278"
+		y="245"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc8a2"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="278"
+		y="275"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc9a2"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="362"
+		y="8"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc0a3"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="362"
+		y="38"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc1a3"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="364"
+		y="67"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc2a3"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="364"
+		y="97"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc3a3"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="364"
+		y="127"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc4a3"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="364"
+		y="157"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc5a3"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="366"
+		y="186"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc6a3"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="366"
+		y="216"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc7a3"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="367"
+		y="245"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc8a3"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="367"
+		y="275"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc9a3"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="452"
+		y="9"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc0a4"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="452"
+		y="39"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc1a4"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="454"
+		y="68"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc2a4"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="454"
+		y="98"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc3a4"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="454"
+		y="128"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc4a4"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="454"
+		y="158"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc5a4"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="456"
+		y="187"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc6a4"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="456"
+		y="217"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc7a4"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="457"
+		y="246"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc8a4"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="457"
+		y="276"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc9a4"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="542"
+		y="10"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc0a5"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="542"
+		y="40"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc1a5"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="544"
+		y="69"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc2a5"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="544"
+		y="99"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc3a5"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="544"
+		y="129"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc4a5"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="544"
+		y="159"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc5a5"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="546"
+		y="188"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc6a5"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="546"
+		y="218"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc7a5"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="547"
+		y="247"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc8a5"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="547"
+		y="277"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc9a5"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="629"
+		y="9"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc0a6"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="629"
+		y="39"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc1a6"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="631"
+		y="68"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc2a6"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="631"
+		y="98"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc3a6"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="631"
+		y="128"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc4a6"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="631"
+		y="158"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc5a6"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="633"
+		y="187"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc6a6"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="633"
+		y="217"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc7a6"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="634"
+		y="246"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc8a6"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="634"
+		y="276"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc9a6"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="719"
+		y="10"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc0a7"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="719"
+		y="40"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc1a7"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="721"
+		y="69"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc2a7"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="721"
+		y="99"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc3a7"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="721"
+		y="129"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc4a7"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="721"
+		y="159"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc5a7"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="723"
+		y="188"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc6a7"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="723"
+		y="218"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc7a7"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="724"
+		y="247"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc8a7"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="724"
+		y="277"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc9a7"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="808"
+		y="10"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc0a8"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="808"
+		y="40"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc1a8"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="810"
+		y="69"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc2a8"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="810"
+		y="99"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc3a8"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="810"
+		y="129"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc4a8"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="810"
+		y="159"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc5a8"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="812"
+		y="188"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc6a8"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="812"
+		y="218"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc7a8"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="813"
+		y="247"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc8a8"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}
+"text update" {
+	object {
+		x="813"
+		y="277"
+		width="82"
+		height="24"
+	}
+	monitor {
+		rdbk="mrkc9a8"
+		clr="0"
+		bclr="14"
+	}
+	clrmod="static"
+	align="horiz. left"
+	format="decimal"
+	pad="0"
+}

@@ -1,0 +1,21 @@
+dbpf "mrkai1LinkinfoRemote.PROC","1"
+mrkai1LinkinfoRemote  connected nelements 1 sevr 0
+time 2004/05/27 16:46:05 DBFtype 8
+controlLimits 0.000000 20.000000 displayLimits 0.000000 20.000000
+alarmLimits 2.000000 4.000000 16.000000 18.000000
+precision 2 units Counts
+DBR_UCHAR:          1         0x1                 
+dbpf "mrkbi1LinkinfoRemote.PROC","1"
+mrkbi1LinkinfoRemote  connected nelements 1 sevr 1
+time 2004/05/27 16:44:11 DBFtype 9
+controlLimits 0.000000 0.000000 displayLimits 0.000000 0.000000
+alarmLimits 0.000000 0.000000 0.000000 0.000000
+precision 0 units 
+DBR_UCHAR:          1         0x1                 
+dbpf "mrkwf1LinkinfoRemote.PROC","1"
+mrkwf1LinkinfoRemote  connected nelements 20 sevr 0
+time 2004/05/27 16:46:05 DBFtype 1
+controlLimits 0.000000 20.000000 displayLimits 0.000000 20.000000
+alarmLimits 0.000000 0.000000 0.000000 0.000000
+precision 0 units 
+DBR_UCHAR:          1         0x1                 

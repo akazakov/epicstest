@@ -1,0 +1,4 @@
+# This allows write access to everyone and allows TRAPWRITE
+ASG(DEFAULT) {
+	RULE(1,WRITE,TRAPWRITE)
+}

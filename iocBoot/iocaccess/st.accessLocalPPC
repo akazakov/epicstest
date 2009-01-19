@@ -1,0 +1,20 @@
+# Example vxWorks startup file
+< cdCommandsPPC
+< ../nfsCommands
+cd topbin
+
+ld < access.munch
+cd startup
+asSetFilename("../../accessApp/acf/local.acf")
+asSetSubstitutions("where=LOCAL,user=\"mrk,jhill\",host=\"mercury,uranus\",iocRemote=iocRemote")
+dbLoadDatabase("../../dbd/access.dbd")
+access_registerRecordDeviceDriver(pdbbase)
+dbLoadRecords("../../accessApp/db/local.db")
+#dbLoadRecords("../../accessApp/db/big.db")
+asCaDebug=1
+iocInit
+dbpf "mrkLOCALasg3","1"
+dbpf "mrkLOCALdefault","1"
+dbpf "mrkLOCALprotected","1"
+dbpf "mrkLOCALhostAccess","1"
+dbpf "mrkLOCALremoteAccess","1"

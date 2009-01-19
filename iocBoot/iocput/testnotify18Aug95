@@ -1,0 +1,135 @@
+< init > /dev/null
+#test synchronous
+< p0sec > /dev/null
+dbtpn "mrkhead","2"
+process:   mrkhead
+process:   mrkfanout
+process:   mrk11
+process:   mrk12
+process:   mrk13
+process:   mrk21
+process:   mrk22
+process:   mrk23
+dbtpn: Pending nwaiting=0
+value = 0 = 0x0
+taskDelay(60)
+dbtpnCallback: success record=mrkhead
+value = 0 = 0x0
+#test all asynchronous
+< p2sec > /dev/null
+dbtpn "mrkhead","2"
+process:   mrkhead
+Starting asynchronous processing: mrkhead
+dbtpn: Pending nwaiting=1
+value = 0 = 0x0
+taskDelay(400)
+Completed asynchronous processing: mrkhead
+process:   mrkfanout
+process:   mrk11
+Starting asynchronous processing: mrk11
+process:   mrk21
+Starting asynchronous processing: mrk21
+Completed asynchronous processing: mrk11
+process:   mrk12
+process:   mrk13
+Starting asynchronous processing: mrk13
+Completed asynchronous processing: mrk21
+process:   mrk22
+process:   mrk23
+Starting asynchronous processing: mrk23
+Completed asynchronous processing: mrk13
+Completed asynchronous processing: mrk23
+dbtpnCallback: success record=mrkhead
+value = 0 = 0x0
+#test mrkhead syn and rest asyn
+dbpf "mrkhead.DISV","0" > /dev/null
+value = 0 = 0x0
+dbtpn "mrkhead","2"
+process:   mrkhead
+process:   mrkfanout
+process:   mrk11
+Starting asynchronous processing: mrk11
+process:   mrk21
+Starting asynchronous processing: mrk21
+dbtpn: Pending nwaiting=2
+value = 0 = 0x0
+taskDelay(300)
+Completed asynchronous processing: mrk11
+process:   mrk12
+process:   mrk13
+Starting asynchronous processing: mrk13
+Completed asynchronous processing: mrk21
+process:   mrk22
+process:   mrk23
+Starting asynchronous processing: mrk23
+Completed asynchronous processing: mrk13
+Completed asynchronous processing: mrk23
+dbtpnCallback: success record=mrkhead
+value = 0 = 0x0
+#test caching dbPutField with dbtpn
+dbpf "mrk11.DISV","0" > /dev/null
+value = 0 = 0x0
+dbtpn "mrk11","2"
+process:   mrk11
+process:   mrk12
+process:   mrk13
+Starting asynchronous processing: mrk13
+dbtpn: Pending nwaiting=1
+value = 0 = 0x0
+dbpf "mrk13","2"
+active:    mrk13
+DBR_DOUBLE:         2                   
+value = 0 = 0x0
+taskDelay(300)
+Completed asynchronous processing: mrk13
+dbtpnCallback: success record=mrk11
+process:   mrk13
+Starting asynchronous processing: mrk13
+Completed asynchronous processing: mrk13
+value = 0 = 0x0
+#test caching dbPutNotify
+dbpf "mrk13","5"
+process:   mrk13
+Starting asynchronous processing: mrk13
+DBR_DOUBLE:         5                   
+value = 0 = 0x0
+dbtpn "mrk11","5"
+process:   mrk11
+process:   mrk12
+active:    mrk13
+dbtpn: Pending nwaiting=1
+value = 0 = 0x0
+taskDelay(300)
+Completed asynchronous processing: mrk13
+process:   mrk11
+process:   mrk12
+process:   mrk13
+Starting asynchronous processing: mrk13
+Completed asynchronous processing: mrk13
+dbtpnCallback: success record=mrk11
+value = 0 = 0x0
+#test for same record repeated
+dbtpn "mrkseq","1"
+process:   mrkseq
+dbtpn: Pending nwaiting=1
+value = 0 = 0x0
+taskDelay(1800)
+process:   mrk11
+process:   mrk12
+process:   mrk13
+Starting asynchronous processing: mrk13
+Completed asynchronous processing: mrk13
+process:   mrk21
+Starting asynchronous processing: mrk21
+Completed asynchronous processing: mrk21
+process:   mrk22
+process:   mrk23
+Starting asynchronous processing: mrk23
+Completed asynchronous processing: mrk23
+process:   mrk11
+process:   mrk12
+process:   mrk13
+Starting asynchronous processing: mrk13
+Completed asynchronous processing: mrk13
+dbtpnCallback: success record=mrkseq
+value = 0 = 0x0

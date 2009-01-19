@@ -1,0 +1,21 @@
+listener1 before mrkLOCALprotected anj uranus.aps.anl.gov 0.000000
+listener2 before mrkLOCALprotected anj uranus.aps.anl.gov 0.000000
+listener1 after mrkLOCALprotected anj uranus.aps.anl.gov 1.000000
+listener2 after mrkLOCALprotected anj uranus.aps.anl.gov 1.000000
+listener1 before mrkLOCALprotected anj uranus.aps.anl.gov 1.000000
+listener2 before mrkLOCALprotected anj uranus.aps.anl.gov 1.000000
+listener1 after mrkLOCALprotected anj uranus.aps.anl.gov 2.000000
+listener2 after mrkLOCALprotected anj uranus.aps.anl.gov 2.000000
+listener1 before mrkLOCALprotected anj uranus.aps.anl.gov 2.000000
+listener2 before mrkLOCALprotected anj uranus.aps.anl.gov 2.000000
+listener1 after mrkLOCALprotected anj uranus.aps.anl.gov 3.000000
+listener2 after mrkLOCALprotected anj uranus.aps.anl.gov 3.000000
+listener1 before mrkLOCALprotected anj uranus.aps.anl.gov 3.000000
+listener2 before mrkLOCALprotected anj uranus.aps.anl.gov 3.000000
+listener1 after mrkLOCALprotected anj uranus.aps.anl.gov 4.000000
+listener2 after mrkLOCALprotected anj uranus.aps.anl.gov 4.000000
+listener1 before mrkLOCALprotected anj uranus.aps.anl.gov 4.000000
+listener2 before mrkLOCALprotected anj uranus.aps.anl.gov 4.000000
+listener1 after mrkLOCALprotected anj uranus.aps.anl.gov 5.000000
+listener2 after mrkLOCALprotected anj uranus.aps.anl.gov 5.000000
+asTrapWriteTest done

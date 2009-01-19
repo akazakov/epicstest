@@ -1,0 +1,47 @@
+NOTE: In following recordsPerSecond is actually for 103 records
+
+
+R3.12.2
+mv167> timeproc: N=1000 totalTime=5.283333e+00 recordsPerSecond=1.892744e+02
+
+R3.13.0.alpha2
+mv167> timeproc: N=1000 totalTime=5.383333e+00 recordsPerSecond=1.857585e+02
+
+R3.?
+mv167> timeproc: N=1000 totalTime=5.650000e+00 recordsPerSecond=1.769912e+02
+
+R3.14.9 on mv167, Tornado 2.2.1				    (ANJ 2007-01-25)
+mv167> timeproc: N=1000 totalTime=7.166667e+00 recordsPerSecond=1.395349e+02
+
+
+R3.14.0beta2 on a mv162 and a HPUX 9000/785                  (RL 10/15/2002)
+mv162> timeproc: N=1000 totalTime=6.483333e+00 recordsPerSecond=1.542416e+02
+hp785> timeproc: N=1000 totalTime=8.078570e-01 recordsPerSecond=1.237843e+03
+
+R3.14.1 on the HPUX 9000/785                                 (RL 12/19/2002)
+hp785> timeproc: N=1000 totalTime=8.357180e-01 recordsPerSecond=1.196576e+03
+
+R3.14.2 on the HPUX 9000/785                                 (RL 04/23/2003)
+hp785> timeproc: N=1000 totalTime=8.858120e-01 recordsPerSecond=1.128908e+03
+
+R3.14.3 on the HPUX 9000/785                                 (RL 09/03/2003)
+hp785> timeproc: N=1000 totalTime=9.182940e-01 recordsPerSecond=1.088976e+03
+
+R3.14.5 on the HPUX 9000/785                                 (RL 02/01/2004)
+hp785> timeproc: N=1000 totalTime=9.118720e-01 recordsPerSecond=1.096645e+03
+
+R3.14.6 on the HPUX 9000/785                                  (RL 05/27/2004)
+hp785>  timeproc: N=1000 totalTime=9.079600e-01 recordsPerSecond=1.101370e+03
+        on P4-2.4Ghz RH8 Kernel 2.4.23
+P4-2.4> timeproc: N=1000 totalTime=1.513180e-01 recordsPerSecond=6.608599e+03
+
+R3.14.7 on the HPUX 9000/785                                  (RL 10/28/2004)
+hp785>  timeproc: N=1000 totalTime=9.838590e-01 recordsPerSecond=1.016406e+03
+        on P4-2.4Ghz RH8 Kernel 2.4.23
+P4-2.4> timeproc: N=1000 totalTime=1.488220e-01 recordsPerSecond=6.719437e+03
+
+R3.14.8 on the HPUX 9000/785                                  (RL 11/21/2005)
+hp785>  timeproc: N=1000 totalTime=7.630730e-01 recordsPerSecond=1.310491e+03
+        on Xeon-2.8Ghz Debian3.1 Kernel 2.4.25
+P4-2.4> timeproc: N=1000 totalTime=1.122520e-01 recordsPerSecond=8.908527e+03
+

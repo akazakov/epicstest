@@ -1,0 +1,41 @@
+UAG(uag1) {mrk,jhill}
+HAG(hag1) {mercury,earth,uranus}
+HAG(ioc) {iocRemote,venus,mercury,earth,uranus}
+ASG(DEFAULT) {
+	RULE(1,READ)
+	RULE(0,WRITE) {
+		UAG(uag1)
+		HAG(hag1)
+	}
+}
+ASG(allowRestart) {
+	RULE(1,WRITE) {
+		UAG(uag1)
+	}
+}
+ASG(changePermit) {
+        INPB(mrk$(where)remoteAccess)
+	RULE(1,WRITE) {
+		UAG(uag1)
+	}
+        RULE(1,READ) {
+                CALC("b>=1")
+                HAG(ioc)
+        }
+        RULE(0,WRITE) {
+                CALC("b>=2")
+                HAG(ioc)
+        }
+}
+ASG(protected) {
+	INPA(mrk$(where)hostAccess)
+	INPB(mrk$(where)remoteAccess)
+	RULE(1,READ) {
+		CALC("b>=1")
+		HAG(ioc)
+	}
+	RULE(0,WRITE) {
+		CALC("b>=2")
+		HAG(ioc)
+	}
+}

@@ -1,0 +1,4 @@
+dbLoadDatabase("../../dbd/common.dbd",0,0)
+common_registerRecordDeviceDriver(pdbbase)
+dbLoadRecords("../../demoApp/Db/demo.db",0)
+iocInit

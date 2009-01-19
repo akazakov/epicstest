@@ -1,0 +1,31 @@
+tickGet()/60
+value = 54 = 0x36 = '6'
+memShow
+ status   bytes    blocks   avg block  max block
+ ------ --------- -------- ---------- ----------
+current
+   free   3855940       11     350540   3806000
+  alloc   4001620    25926        154        -
+cumulative
+  alloc   4445108    26301        169        -
+value = 0 = 0x0
+iocInit
+############################################################################
+###  @(#)EPICS IOC CORE
+###  @(#)EPICS Version 3.13.0.beta7 $Date: 1999-09-28 02:53:38 +0900 (Tue, 28 Sep 1999) $
+############################################################################
+0x7aa2c0 (tShell): iocInit: All initialization complete
+value = 0 = 0x0
+tickGet()/60
+value = 57 = 0x39 = '9'
+memShow
+ status   bytes    blocks   avg block  max block
+ ------ --------- -------- ---------- ----------
+current
+   free   2932252        8     366531   2907200
+  alloc   4925308    41216        119        -
+cumulative
+  alloc   5378756    41600        129        -
+value = 0 = 0x0
+ 
+

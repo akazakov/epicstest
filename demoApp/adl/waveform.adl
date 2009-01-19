@@ -1,0 +1,563 @@
+file {
+	name="waveform.dl"
+}
+display {
+	magic="305419896"
+	majv="1"
+	mnrv="16"
+	ndyn="0"
+	npc="2"
+	nstr="3"
+	nmon="0"
+	nctrl="0"
+	nplot="1"
+	nrd="0"
+	object {
+		x="0"
+		y="0"
+		width="466"
+		height="438"
+	}
+	clr="0"
+	bclr="57"
+	nwords_dspy="257"
+	nwords_sta="0"
+	nwords_cmap="153"
+	odyn="220"
+	osta="220"
+	omon="220"
+	octrl="220"
+	oplot="220"
+	ord="257"
+	opc="44"
+	ostr="55"
+	ocmap="67"
+	style="solid"
+	fill="outline"
+	field_pad1="0"
+	width="0"
+	clrmod="static"
+	vismod="static"
+	pv=""
+	cmap=""
+}
+"<<color map>>" {
+	ncolors="75"
+	dl_color {
+		r="255"
+		g="255"
+		b="255"
+		inten="255"
+	}
+	dl_color {
+		r="236"
+		g="236"
+		b="236"
+		inten="0"
+	}
+	dl_color {
+		r="218"
+		g="218"
+		b="218"
+		inten="0"
+	}
+	dl_color {
+		r="200"
+		g="200"
+		b="200"
+		inten="0"
+	}
+	dl_color {
+		r="187"
+		g="187"
+		b="187"
+		inten="0"
+	}
+	dl_color {
+		r="174"
+		g="174"
+		b="174"
+		inten="0"
+	}
+	dl_color {
+		r="158"
+		g="158"
+		b="158"
+		inten="0"
+	}
+	dl_color {
+		r="145"
+		g="145"
+		b="145"
+		inten="0"
+	}
+	dl_color {
+		r="133"
+		g="133"
+		b="133"
+		inten="0"
+	}
+	dl_color {
+		r="120"
+		g="120"
+		b="120"
+		inten="0"
+	}
+	dl_color {
+		r="105"
+		g="105"
+		b="105"
+		inten="0"
+	}
+	dl_color {
+		r="90"
+		g="90"
+		b="90"
+		inten="0"
+	}
+	dl_color {
+		r="70"
+		g="70"
+		b="70"
+		inten="0"
+	}
+	dl_color {
+		r="45"
+		g="45"
+		b="45"
+		inten="0"
+	}
+	dl_color {
+		r="0"
+		g="0"
+		b="0"
+		inten="0"
+	}
+	dl_color {
+		r="0"
+		g="255"
+		b="0"
+		inten="0"
+	}
+	dl_color {
+		r="55"
+		g="255"
+		b="0"
+		inten="0"
+	}
+	dl_color {
+		r="112"
+		g="255"
+		b="0"
+		inten="0"
+	}
+	dl_color {
+		r="165"
+		g="255"
+		b="0"
+		inten="0"
+	}
+	dl_color {
+		r="215"
+		g="255"
+		b="0"
+		inten="0"
+	}
+	dl_color {
+		r="255"
+		g="255"
+		b="0"
+		inten="0"
+	}
+	dl_color {
+		r="255"
+		g="227"
+		b="0"
+		inten="0"
+	}
+	dl_color {
+		r="255"
+		g="199"
+		b="0"
+		inten="0"
+	}
+	dl_color {
+		r="255"
+		g="171"
+		b="0"
+		inten="0"
+	}
+	dl_color {
+		r="255"
+		g="143"
+		b="0"
+		inten="0"
+	}
+	dl_color {
+		r="255"
+		g="115"
+		b="0"
+		inten="0"
+	}
+	dl_color {
+		r="255"
+		g="87"
+		b="0"
+		inten="0"
+	}
+	dl_color {
+		r="255"
+		g="59"
+		b="0"
+		inten="0"
+	}
+	dl_color {
+		r="255"
+		g="30"
+		b="0"
+		inten="0"
+	}
+	dl_color {
+		r="255"
+		g="0"
+		b="0"
+		inten="0"
+	}
+	dl_color {
+		r="255"
+		g="0"
+		b="0"
+		inten="0"
+	}
+	dl_color {
+		r="255"
+		g="0"
+		b="30"
+		inten="0"
+	}
+	dl_color {
+		r="255"
+		g="0"
+		b="59"
+		inten="0"
+	}
+	dl_color {
+		r="255"
+		g="0"
+		b="87"
+		inten="0"
+	}
+	dl_color {
+		r="255"
+		g="0"
+		b="115"
+		inten="0"
+	}
+	dl_color {
+		r="255"
+		g="0"
+		b="143"
+		inten="0"
+	}
+	dl_color {
+		r="255"
+		g="0"
+		b="171"
+		inten="0"
+	}
+	dl_color {
+		r="255"
+		g="0"
+		b="199"
+		inten="0"
+	}
+	dl_color {
+		r="255"
+		g="0"
+		b="227"
+		inten="0"
+	}
+	dl_color {
+		r="255"
+		g="0"
+		b="255"
+		inten="0"
+	}
+	dl_color {
+		r="255"
+		g="0"
+		b="255"
+		inten="0"
+	}
+	dl_color {
+		r="227"
+		g="0"
+		b="255"
+		inten="0"
+	}
+	dl_color {
+		r="199"
+		g="0"
+		b="255"
+		inten="0"
+	}
+	dl_color {
+		r="171"
+		g="0"
+		b="255"
+		inten="0"
+	}
+	dl_color {
+		r="143"
+		g="0"
+		b="255"
+		inten="0"
+	}
+	dl_color {
+		r="115"
+		g="0"
+		b="255"
+		inten="0"
+	}
+	dl_color {
+		r="88"
+		g="0"
+		b="255"
+		inten="0"
+	}
+	dl_color {
+		r="59"
+		g="0"
+		b="255"
+		inten="0"
+	}
+	dl_color {
+		r="62"
+		g="0"
+		b="255"
+		inten="0"
+	}
+	dl_color {
+		r="0"
+		g="0"
+		b="255"
+		inten="0"
+	}
+	dl_color {
+		r="0"
+		g="0"
+		b="255"
+		inten="0"
+	}
+	dl_color {
+		r="0"
+		g="30"
+		b="255"
+		inten="0"
+	}
+	dl_color {
+		r="0"
+		g="59"
+		b="255"
+		inten="0"
+	}
+	dl_color {
+		r="0"
+		g="87"
+		b="255"
+		inten="0"
+	}
+	dl_color {
+		r="0"
+		g="115"
+		b="255"
+		inten="0"
+	}
+	dl_color {
+		r="0"
+		g="143"
+		b="255"
+		inten="0"
+	}
+	dl_color {
+		r="0"
+		g="171"
+		b="255"
+		inten="255"
+	}
+	dl_color {
+		r="0"
+		g="199"
+		b="255"
+		inten="0"
+	}
+	dl_color {
+		r="0"
+		g="227"
+		b="255"
+		inten="0"
+	}
+	dl_color {
+		r="0"
+		g="255"
+		b="255"
+		inten="0"
+	}
+	dl_color {
+		r="0"
+		g="255"
+		b="255"
+		inten="0"
+	}
+	dl_color {
+		r="0"
+		g="255"
+		b="227"
+		inten="0"
+	}
+	dl_color {
+		r="0"
+		g="139"
+		b="0"
+		inten="0"
+	}
+	dl_color {
+		r="170"
+		g="0"
+		b="0"
+		inten="0"
+	}
+	dl_color {
+		r="143"
+		g="209"
+		b="1"
+		inten="0"
+	}
+	dl_color {
+		r="226"
+		g="230"
+		b="219"
+		inten="0"
+	}
+	dl_color {
+		r="248"
+		g="255"
+		b="238"
+		inten="0"
+	}
+	dl_color {
+		r="97"
+		g="65"
+		b="0"
+		inten="0"
+	}
+	dl_color {
+		r="111"
+		g="81"
+		b="13"
+		inten="0"
+	}
+	dl_color {
+		r="125"
+		g="101"
+		b="36"
+		inten="0"
+	}
+	dl_color {
+		r="137"
+		g="126"
+		b="61"
+		inten="0"
+	}
+	dl_color {
+		r="154"
+		g="145"
+		b="78"
+		inten="0"
+	}
+	dl_color {
+		r="173"
+		g="169"
+		b="99"
+		inten="0"
+	}
+	dl_color {
+		r="185"
+		g="191"
+		b="118"
+		inten="0"
+	}
+	dl_color {
+		r="200"
+		g="209"
+		b="137"
+		inten="0"
+	}
+}
+"cartesian plot" {
+	object {
+		x="4"
+		y="32"
+		width="459"
+		height="401"
+	}
+	plotcom {
+		title=""
+		xlabel="X"
+		ylabel="Y"
+		clr="0"
+		bclr="55"
+		package=""
+	}
+	style="line plot"
+	erase_oldest="off"
+	count="0"
+	trace[0] {
+		xdata=""
+		ydata="mrkwf1"
+		data_clr="0"
+		RISC_pad="0"
+	}
+	trace[1] {
+		xdata=""
+		ydata=""
+		data_clr="0"
+		RISC_pad="0"
+	}
+	trace[2] {
+		xdata=""
+		ydata=""
+		data_clr="0"
+		RISC_pad="0"
+	}
+	trace[3] {
+		xdata=""
+		ydata=""
+		data_clr="0"
+		RISC_pad="0"
+	}
+	trace[4] {
+		xdata=""
+		ydata=""
+		data_clr="0"
+		RISC_pad="0"
+	}
+	trace[5] {
+		xdata=""
+		ydata=""
+		data_clr="0"
+		RISC_pad="0"
+	}
+	trace[6] {
+		xdata=""
+		ydata=""
+		data_clr="0"
+		RISC_pad="0"
+	}
+	trace[7] {
+		xdata=""
+		ydata=""
+		data_clr="0"
+		RISC_pad="0"
+	}
+}

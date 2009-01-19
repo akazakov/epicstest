@@ -1,0 +1,12 @@
+# test caching puts
+#First test that dbPutField caches
+dbpf "mrk13.DISV","3"
+dbpf "mrk11","2"
+dbpf "mrk11","3"
+# wait for completion
+epicsThreadSleep(7.0)
+#Now test that dbPutLink caches
+dbpf "mrk11.DISV","0"
+dbpf "mrk13","5"
+dbpf "mrk11","5"
+epicsThreadSleep(7.0)

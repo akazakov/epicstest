@@ -1,0 +1,3 @@
+#RULES.Db
+include $(EPICS_BASE)/configure/RULES.Db
+

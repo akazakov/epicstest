@@ -1,0 +1,387 @@
+astac("mrkLOCALprotected","mrk","mercury")
+astac callback mrkLOCALprotected: status=0 get Yes put No
+value = 0 = 0x0
+astac("mrkLOCALprotected.HIHI","mrk","mercury")
+astac callback mrkLOCALprotected: status=0 get Yes put No
+value = 0 = 0x0
+astac("mrkLOCALprotected","xyz","xyz")
+astac callback mrkLOCALprotected: status=0 get No put No
+value = 0 = 0x0
+astac("mrkLOCALasg3","mrk","mercury")
+astac callback mrkLOCALasg3: status=0 get Yes put Yes
+value = 0 = 0x0
+astac("mrkLOCALdefault","mrk","mercury")
+astac callback mrkLOCALdefault: status=0 get Yes put Yes
+value = 0 = 0x0
+# Test syntax
+asSetFilename("../../accessApp/acf/syntax.acf")
+value = 0 = 0x0
+dbpf("mrkLOCALrestartAS","1")
+DBR_DOUBLE:         1                   
+value = 0 = 0x0
+threadSleep(4.0)
+asCaStop called
+asCaTask has cleared all channels
+asCaStop done
+astac callback mrkLOCALasg3: status=0 get Yes put No
+astac callback mrkLOCALdefault: status=0 get Yes put No
+astac callback mrkLOCALprotected: status=0 get No put No
+astac callback mrkLOCALprotected: status=0 get Yes put No
+asCaStart called
+asCaTask initialized
+asCaStart done
+value = 0 = 0x0
+asdbdump
+UAG(uag0)
+UAG(uag1) {user1}
+UAG(uag2) {user1,user2,user3}
+HAG(hag0)
+HAG(hag1) {host1}
+HAG(hag2) {host1,host2,host3,xx.yy.zz}
+ASG(DEFAULT) {
+	RULE(0,READ)
+	MEMBERLIST
+		asg3 Record:mrkLOCALasg3
+			 mrk mercury ASL0 READ
+		<null> Record:mrkLOCALdefault
+			 mrk mercury ASL0 READ
+		allowRestart Record:mrkLOCALrestartAS
+		changePermit Record:mrkLOCALhostAccess
+		changePermit Record:mrkLOCALremoteAccess
+		protected Record:mrkLOCALprotected
+			 mrk mercury ASL0 READ
+			 mrk mercury ASL1 NONE
+			 xyz xyz ASL0 READ
+}
+ASG(asg0)
+ASG(asg1) {
+	INPA(mrkLOCALasginpa) INVALID value=0.000000
+	INPB(pv:0[]<>.XYZ) INVALID value=0.000000
+	RULE(0,READ)
+	RULE(0,READ) {
+		CALC("A=1?(B=1?1:0):0") result=FALSE
+	}
+	RULE(1,WRITE) {
+		UAG(uag1)
+		HAG(hag1)
+	}
+	RULE(0,WRITE) {
+		UAG(uag1,uag2)
+		HAG(hag1,hag2)
+		CALC("A=1?(B=1?1:0):0") result=FALSE
+	}
+}
+ASG(asg2) {
+	RULE(0,WRITE) {
+		UAG(uag1)
+	}
+}
+value = 0 = 0x0
+# Test Default
+asSetFilename("../../accessApp/acf/default.acf")
+value = 0 = 0x0
+dbpf("mrkLOCALrestartAS","1")
+DBR_DOUBLE:         1                   
+value = 0 = 0x0
+threadSleep(4.0)
+asCaStop called
+asCaTask has cleared all channels
+asCaStop done
+asCaStart called
+asCaTask initialized
+asCaStart done
+value = 0 = 0x0
+asdbdump
+No UAGs
+No HAGs
+ASG(DEFAULT) {
+	RULE(0,READ)
+	MEMBERLIST
+		asg3 Record:mrkLOCALasg3
+			 mrk mercury ASL0 READ
+		<null> Record:mrkLOCALdefault
+			 mrk mercury ASL0 READ
+		allowRestart Record:mrkLOCALrestartAS
+		changePermit Record:mrkLOCALhostAccess
+		changePermit Record:mrkLOCALremoteAccess
+		protected Record:mrkLOCALprotected
+			 mrk mercury ASL0 READ
+			 mrk mercury ASL1 NONE
+			 xyz xyz ASL0 READ
+}
+value = 0 = 0x0
+asSetFilename("../../accessApp/acf/local.acf")
+value = 0 = 0x0
+dbpf("mrkLOCALrestartAS","1")
+DBR_DOUBLE:         1                   
+value = 0 = 0x0
+threadSleep(4.0)
+asCaStop called
+asCaTask has cleared all channels
+asCaStop done
+astac callback mrkLOCALasg3: status=0 get Yes put Yes
+astac callback mrkLOCALdefault: status=0 get Yes put Yes
+astac callback mrkLOCALprotected: status=0 get No put No
+astac callback mrkLOCALprotected: status=0 get No put No
+asCaStart called
+as eventCallback mrkLOCALremoteAccess inpGood data 1.000000
+as eventCallback mrkLOCALhostAccess inpGood data 1.000000
+as eventCallback mrkLOCALremoteAccess inpGood data 1.000000
+astac callback mrkLOCALprotected: status=0 get Yes put No
+astac callback mrkLOCALprotected: status=0 get Yes put No
+asCaTask initialized
+asCaStart done
+value = 0 = 0x0
+asdbdump
+UAG(uag1) {mrk,jhill}
+HAG(hag1) {mercury}
+HAG(iocRemote) {iocRemote}
+ASG(DEFAULT) {
+	RULE(1,READ)
+	RULE(0,WRITE) {
+		UAG(uag1)
+		HAG(hag1)
+	}
+	MEMBERLIST
+		asg3 Record:mrkLOCALasg3
+			 mrk mercury ASL0 WRITE
+		<null> Record:mrkLOCALdefault
+			 mrk mercury ASL0 WRITE
+}
+ASG(allowRestart) {
+	RULE(1,WRITE) {
+		UAG(uag1)
+	}
+	MEMBERLIST
+		allowRestart Record:mrkLOCALrestartAS
+}
+ASG(changePermit) {
+	INPB(mrkLOCALremoteAccess)   VALID value=1.000000
+	RULE(1,WRITE) {
+		UAG(uag1)
+	}
+	RULE(1,READ) {
+		HAG(iocRemote)
+		CALC("B>=1") result=TRUE
+	}
+	RULE(0,WRITE) {
+		HAG(iocRemote)
+		CALC("B>=2") result=FALSE
+	}
+	MEMBERLIST
+		changePermit Record:mrkLOCALhostAccess
+		changePermit Record:mrkLOCALremoteAccess
+}
+ASG(protected) {
+	INPA(mrkLOCALhostAccess)   VALID value=1.000000
+	INPB(mrkLOCALremoteAccess)   VALID value=1.000000
+	RULE(1,READ) {
+		UAG(uag1)
+		HAG(hag1)
+		CALC("A>=1") result=TRUE
+	}
+	RULE(0,WRITE) {
+		UAG(uag1)
+		HAG(hag1)
+		CALC("A>=2") result=FALSE
+	}
+	RULE(1,WRITE) {
+		UAG(uag1)
+		HAG(hag1)
+		CALC("A=3") result=FALSE
+	}
+	RULE(1,READ) {
+		HAG(iocRemote)
+		CALC("B>=1") result=TRUE
+	}
+	RULE(0,WRITE) {
+		HAG(iocRemote)
+		CALC("B>=2") result=FALSE
+	}
+	MEMBERLIST
+		protected Record:mrkLOCALprotected
+			 mrk mercury ASL0 READ
+			 mrk mercury ASL1 READ
+			 xyz xyz ASL0 NONE
+}
+value = 0 = 0x0
+dbpf("mrkLOCALhostAccess","No Access")
+DBR_STRING:          No Access          
+value = 0 = 0x0
+threadSleep(1.0)
+as eventCallback mrkLOCALhostAccess inpGood data 0.000000
+astac callback mrkLOCALprotected: status=0 get No put No
+astac callback mrkLOCALprotected: status=0 get No put No
+value = 0 = 0x0
+asprules("protected")
+ASG(protected) {
+	INPA(mrkLOCALhostAccess) value=0.000000
+	INPB(mrkLOCALremoteAccess) value=1.000000
+	RULE(1,READ) {
+		UAG(uag1)
+		HAG(hag1)
+		CALC("A>=1") result=FALSE
+	}
+	RULE(0,WRITE) {
+		UAG(uag1)
+		HAG(hag1)
+		CALC("A>=2") result=FALSE
+	}
+	RULE(1,WRITE) {
+		UAG(uag1)
+		HAG(hag1)
+		CALC("A=3") result=FALSE
+	}
+	RULE(1,READ) {
+		HAG(iocRemote)
+		CALC("B>=1") result=TRUE
+	}
+	RULE(0,WRITE) {
+		HAG(iocRemote)
+		CALC("B>=2") result=FALSE
+	}
+}
+value = 0 = 0x0
+aspmem("protected",1)
+ASG(protected)
+	MEMBERLIST
+		protected Record:mrkLOCALprotected
+			 mrk mercury ASL0 NONE
+			 mrk mercury ASL1 NONE
+			 xyz xyz ASL0 NONE
+value = 0 = 0x0
+dbpf("mrkLOCALhostAccess","Read Access")
+DBR_STRING:          Read Access        
+value = 0 = 0x0
+threadSleep(1.0)
+as eventCallback mrkLOCALhostAccess inpGood data 1.000000
+astac callback mrkLOCALprotected: status=0 get Yes put No
+astac callback mrkLOCALprotected: status=0 get Yes put No
+value = 0 = 0x0
+asprules("protected")
+ASG(protected) {
+	INPA(mrkLOCALhostAccess) value=1.000000
+	INPB(mrkLOCALremoteAccess) value=1.000000
+	RULE(1,READ) {
+		UAG(uag1)
+		HAG(hag1)
+		CALC("A>=1") result=TRUE
+	}
+	RULE(0,WRITE) {
+		UAG(uag1)
+		HAG(hag1)
+		CALC("A>=2") result=FALSE
+	}
+	RULE(1,WRITE) {
+		UAG(uag1)
+		HAG(hag1)
+		CALC("A=3") result=FALSE
+	}
+	RULE(1,READ) {
+		HAG(iocRemote)
+		CALC("B>=1") result=TRUE
+	}
+	RULE(0,WRITE) {
+		HAG(iocRemote)
+		CALC("B>=2") result=FALSE
+	}
+}
+value = 0 = 0x0
+aspmem("protected",1)
+ASG(protected)
+	MEMBERLIST
+		protected Record:mrkLOCALprotected
+			 mrk mercury ASL0 READ
+			 mrk mercury ASL1 READ
+			 xyz xyz ASL0 NONE
+value = 0 = 0x0
+dbpf("mrkLOCALhostAccess","L0 Write Access")
+DBR_STRING:          L0 Write Access    
+value = 0 = 0x0
+threadSleep(1.0)
+as eventCallback mrkLOCALhostAccess inpGood data 2.000000
+astac callback mrkLOCALprotected: status=0 get Yes put Yes
+value = 0 = 0x0
+asprules("protected")
+ASG(protected) {
+	INPA(mrkLOCALhostAccess) value=2.000000
+	INPB(mrkLOCALremoteAccess) value=1.000000
+	RULE(1,READ) {
+		UAG(uag1)
+		HAG(hag1)
+		CALC("A>=1") result=TRUE
+	}
+	RULE(0,WRITE) {
+		UAG(uag1)
+		HAG(hag1)
+		CALC("A>=2") result=TRUE
+	}
+	RULE(1,WRITE) {
+		UAG(uag1)
+		HAG(hag1)
+		CALC("A=3") result=FALSE
+	}
+	RULE(1,READ) {
+		HAG(iocRemote)
+		CALC("B>=1") result=TRUE
+	}
+	RULE(0,WRITE) {
+		HAG(iocRemote)
+		CALC("B>=2") result=FALSE
+	}
+}
+value = 0 = 0x0
+aspmem("protected",1)
+ASG(protected)
+	MEMBERLIST
+		protected Record:mrkLOCALprotected
+			 mrk mercury ASL0 WRITE
+			 mrk mercury ASL1 READ
+			 xyz xyz ASL0 NONE
+value = 0 = 0x0
+dbpf("mrkLOCALhostAccess","L1 Write Access")
+DBR_STRING:          L1 Write Access    
+value = 0 = 0x0
+threadSleep(1.0)
+as eventCallback mrkLOCALhostAccess inpGood data 3.000000
+astac callback mrkLOCALprotected: status=0 get Yes put Yes
+value = 0 = 0x0
+asprules("protected")
+ASG(protected) {
+	INPA(mrkLOCALhostAccess) value=3.000000
+	INPB(mrkLOCALremoteAccess) value=1.000000
+	RULE(1,READ) {
+		UAG(uag1)
+		HAG(hag1)
+		CALC("A>=1") result=TRUE
+	}
+	RULE(0,WRITE) {
+		UAG(uag1)
+		HAG(hag1)
+		CALC("A>=2") result=TRUE
+	}
+	RULE(1,WRITE) {
+		UAG(uag1)
+		HAG(hag1)
+		CALC("A=3") result=TRUE
+	}
+	RULE(1,READ) {
+		HAG(iocRemote)
+		CALC("B>=1") result=TRUE
+	}
+	RULE(0,WRITE) {
+		HAG(iocRemote)
+		CALC("B>=2") result=FALSE
+	}
+}
+value = 0 = 0x0
+aspmem("protected",1)
+ASG(protected)
+	MEMBERLIST
+		protected Record:mrkLOCALprotected
+			 mrk mercury ASL0 WRITE
+			 mrk mercury ASL1 WRITE
+			 xyz xyz ASL0 NONE
+value = 0 = 0x0
+threadSleep(1.0)
+value = 0 = 0x0

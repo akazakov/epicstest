@@ -1,0 +1,15 @@
+# RELEASE Location of external products
+
+#IOCAPPS = /home/phoebus/ANJ/epics
+
+# vxStats can be used in dbcaPerform
+# VXSTATS = $(IOCAPPS)/modules/soft/vxStats
+
+# Base R3.14.x
+EPICS_BASE = /Users/tyoma/epics/base-3.14.10
+
+# If you have EZCA installed, point this to your extensions tree to test it
+# EZCA=$(IOCAPPS)/extensions
+
+# If msi is not in your search path, point to it here:
+# MSI=$(IOCAPPS)/extensions/bin/$(EPICS_HOST_ARCH)/msi$(HOSTEXE)

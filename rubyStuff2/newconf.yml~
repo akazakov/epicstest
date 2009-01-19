@@ -1,0 +1,27 @@
+:default: &default
+  os: linux
+  debug_level: 5
+
+:defaultIOC: &defaultIOC
+   topDir: /home/tyoma/epics/soft-test
+   binDir: bin
+   ioc: common
+
+:defaultCommand: &defaultCommand
+   type: SH
+
+:defaultCommandSSH: &defaultCommandSSH
+   type: SSH
+   host: burdock.linack.kek.jp
+   user: tyoma
+
+
+MyTestCase: 
+   <<: *default
+   IOC0:
+       <<: *defaultIOC
+       bootDir: iocBoot/iocalarm
+       cmd: stcmd.host
+   COMMAND0:
+       <<: *defaultCommandSSH
+

@@ -1,0 +1,32 @@
+OLD
+
+ ------ --------- -------- ---------- ----------
+current
+   free   2738744       79      34667   2664132
+  alloc   5130000    20319        252        -
+cumulative
+  alloc  13774968   167169         82        -
+
+
+NEW Before iocInit
+
+current
+   free   5879688      113      52032   5636436
+  alloc   1989056    15785        126        -
+cumulative
+  alloc   3920172    44340         88        -
+value = 0 = 0x0
+mv167> 
+ 
+
+NEW after iocInit
+ status   bytes    blocks   avg block  max block
+ ------ --------- -------- ---------- ----------
+current
+   free   2703260      177      15272   2671944
+  alloc   5165484    21686        238        -
+cumulative
+  alloc   7349752    54489        134        -
+value = 0 = 0x0
+mv167> 
+

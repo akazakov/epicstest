@@ -1,0 +1,21 @@
+listener1 before mrkLOCALprotected mrk mercury 0.000000
+listener2 before mrkLOCALprotected mrk mercury 0.000000
+listener1 after mrkLOCALprotected mrk mercury 1.000000
+listener2 after mrkLOCALprotected mrk mercury 1.000000
+listener1 before mrkLOCALprotected mrk mercury 1.000000
+listener2 before mrkLOCALprotected mrk mercury 1.000000
+listener1 after mrkLOCALprotected mrk mercury 2.000000
+listener2 after mrkLOCALprotected mrk mercury 2.000000
+listener1 before mrkLOCALprotected mrk mercury 2.000000
+listener2 before mrkLOCALprotected mrk mercury 2.000000
+listener1 after mrkLOCALprotected mrk mercury 3.000000
+listener2 after mrkLOCALprotected mrk mercury 3.000000
+listener1 before mrkLOCALprotected mrk mercury 3.000000
+listener2 before mrkLOCALprotected mrk mercury 3.000000
+listener1 after mrkLOCALprotected mrk mercury 4.000000
+listener2 after mrkLOCALprotected mrk mercury 4.000000
+listener1 before mrkLOCALprotected mrk mercury 4.000000
+listener2 before mrkLOCALprotected mrk mercury 4.000000
+listener1 after mrkLOCALprotected mrk mercury 5.000000
+listener2 after mrkLOCALprotected mrk mercury 5.000000
+asTrapWriteTest done

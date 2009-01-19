@@ -1,0 +1,17 @@
+# Example vxWorks startup file
+< cdCommands
+< ../nfsCommands
+
+nfsDevShow
+cd topbin
+ld < commonVx.munch
+
+cd top
+dbPvdTableSize(4096)
+dbLoadDatabase("dbd/commonVx.dbd")
+commonVx_registerRecordDeviceDriver(pdbbase)
+dbLoadRecords("dbcaPerformApp/Db/master.db")
+# dbLoadRecords("common/Db/xxiocstatus.db","IOC=dbca")
+scanOnceSetQueueSize(2000)
+cd startup
+iocInit

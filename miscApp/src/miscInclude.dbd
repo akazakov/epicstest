@@ -1,0 +1,15 @@
+include "base.dbd"
+device(ai,CONSTANT,devAiTestLinearOldUP,"Test Linear old Unipolar")
+device(ai,CONSTANT,devAiTestLinearUP,"Test Linear Unipolar")
+device(ai,CONSTANT,devAiTestLinearOldBP,"Test Linear old Bipolar")
+device(ai,CONSTANT,devAiTestLinearRoffBP,"Test Linear ROFF Bipolar")
+device(ai,CONSTANT,devAiTestLinearEoffBP,"Test Linear EOFF Bipolar")
+
+device(ao,CONSTANT,devAoTestLinearOldUP,"Test Linear old Unipolar")
+device(ao,CONSTANT,devAoTestLinearUP,"Test Linear Unipolar")
+device(ao,CONSTANT,devAoTestLinearOldBP,"Test Linear old Bipolar")
+device(ao,CONSTANT,devAoTestLinearRoffBP,"Test Linear ROFF Bipolar")
+device(ao,CONSTANT,devAoTestLinearEoffBP,"Test Linear EOFF Bipolar")
+registrar(errlogTestRegister)
+registrar(generrMessageRegister)
+registrar(generrlogPrintfRegister)

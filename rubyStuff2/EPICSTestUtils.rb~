@@ -1,0 +1,347 @@
+require 'rubygems'
+require 'net/ssh'
+require 'yaml'
+module EPICSTestUtils
+   TEST_RESULTS = [:OK, :NOT_OK, :BAIL_OUT, :TODO, :SKIP]
+   IOC_NAMES = ["IOC0", "IOC1", "IOC2", "IOC3", "IOC4", "IOC5"]
+   COMMAND_NAMES = ["COMMAND0","COMMAND1","COMMAND2","COMMAND3","COMMAND4","COMMAND5"]
+   EPICS_HOST_ARCH = ENV['EPICS_HOST_ARCH']
+   if EPICS_HOST_ARCH.nil? then
+      puts "please set EPICS_HOST_ARCH !!!"
+      exit
+   end
+
+   module DebugPrint
+      attr_accessor :debug_level
+      def debug(msg, esc, adr='')
+	 unless @debug_level.nil? then 
+	    if @debug_level >= esc then 
+	       puts "# ~~~~~~~~     " + this_method + "   "  + adr
+	       puts msg
+	    end
+	 end
+      end
+
+      def this_method
+	 caller[1][/`([^']*)'/, 1]
+      end
+   end
+
+   #
+   # This Class is a container for a test case.
+   # 
+   class TestCase
+      include DebugPrint
+      attr_accessor :formatter, :ioc, :command
+      attr_reader :title
+      def initialize(formatter, title, options = {})
+	 @formatter=formatter
+	 @title=title
+	 @test=[]
+	 @ioc=[]
+	 @command=[]
+	 @options = options
+	 @debug_level = Cfg.find(@options, 'debug_level')
+      end
+
+      def << (test)
+	 @test << test
+      end
+
+      #
+      # Deafult configurator for IOCs
+      def setup_iocs
+	 IOC_NAMES.each do |cur| 
+	    unless @options.has_key?(cur) then break end
+	    options = @options[cur]
+	    if options["type"].nil? || options["type"] == "SH"
+	       @ioc << IOCLocal.new(options)
+	    elsif options["type"] == "SSH"
+		  @ioc << IOCSSH.new(options)
+	    else
+	       raise "Unknown connection type"
+	    end
+	 end
+      end
+
+      #
+      # Default configurator for commands
+      def setup_commands
+	 COMMAND_NAMES.each do |cur| 
+	    debug(@options,2)
+	    unless @options.has_key?(cur) then break end
+	    options = @options[cur]
+	    debug("#{options}",2)
+	    if options["type"].nil? || options["type"] == "SH"
+	       @command << SH.new(options)
+	    elsif options["type"] == "SSH"
+	       @command << SSH.new(options)
+	    else
+	       raise "Unknown connection type"
+	    end
+	 end
+      end
+
+      def start_iocs
+	 @ioc.each { |ioc| ioc.start }
+      end
+      
+      def stop_iocs
+	 @ioc.each { |ioc| ioc.stop }
+      end
+
+      def setup
+	 setup_iocs
+	 setup_commands
+	 start_iocs
+      end
+
+      def teardown
+	 stop_iocs
+      end
+	 
+      def run
+	 setup
+	 formatter.header(self)
+	 @test.each do |test|
+	    test.run
+	    formatter.report(test)
+	 end
+	 formatter.footer(self)
+	 teardown
+      end
+
+      def test_count
+	 @test.size
+      end
+   end # TestCase
+
+      # This class is a template for different output formats:
+   # Particular formatters should derive from here
+   # TAP, HTML, TEXT etc. 
+   class Formatter
+      def header(context)
+	 puts context.title
+      end
+
+      def report(context)
+	 puts context.result
+      end
+
+      def put(string)
+	 puts string
+      end
+
+      def footer(context)
+	 puts(context.title, "is over")
+      end
+   end
+
+   class TAPFormatter < Formatter
+      def header(context)
+	 puts "# #{context.title} starting"
+	 puts "1..#{context.test_count}"
+      end
+      def report(context)
+	 if context.result == :OK then puts "ok - #{context.description} # #{context.explanation}" 
+	 else puts "not_ok - #{context.description} # #{context.result} #{context.explanation}"
+	 end
+      end
+      def put(string)
+	 puts "# #{string}"
+      end
+      def footer(context)
+	 puts "# #{context.title} is over"
+      end
+   end
+
+   # Template Class for user tests
+   # All produced output should go to fromatter.test_output
+   class Test
+      attr_reader :title
+      attr_reader :description
+      attr_reader :explanation
+      attr_accessor :formatter
+      def initialize(formatter,test_case)
+	 @formatter = formatter
+	 @title = "Test Title"
+	 @description = "Test Description"
+	 @explanation = "Test is not implemented yet"
+	 @test_case = test_case
+      end
+      def run
+	 @formatter.put("Run:Nothing here")
+      end
+      def result
+	 :TODO
+      end
+      def ioc
+	 @test_case.ioc
+      end
+      def cmd
+	 @test_case.command
+      end
+   end
+
+   # This is a template class
+   # IOC and SimpleCommand derive from it
+   class ExternalCommand
+      attr_accessor :connector
+      def initialize(connector)
+	 @connector = connector
+      end
+      def start
+	 @connector.connect
+      end
+      def stop
+	 @connector.disconnect
+      end
+      def read
+	 @connector.read
+      end
+      def write(message)
+	 @connector.write(message)
+      end
+      def read_line
+	 @connector.read_line
+      end
+   end
+
+   # Template to represent different types of connections:
+   class Connector
+      def connect
+      end
+
+      def disconnect
+      end
+
+      def read
+      end
+
+      def write(message)
+      end
+
+      def readlines
+      end
+   end
+
+   class SH 
+      def initialize(options = {})
+      end
+      def exec(command)
+	 `#{command}`
+      end
+   end
+
+   class SSH
+      def initialize(options = {})
+	 @connection = Net::SSH.start(options["host"], options["user"])
+      end
+      def exec(command)
+	 @connection.exec!(command)
+      end
+      def close
+	 @connection.close
+      end
+   end
+
+   class IOC
+      def start
+      end
+      def stop
+      end
+      def read
+      end
+      def command
+      end
+   end
+
+   # 
+   # Config handling Stuff
+   #
+   module Cfg
+      def Cfg.load(filename)
+	 f = File.open(filename,"r")
+	 config = YAML::load(f)
+	 if config[:default].nil? then 
+	    raise "Config file should contain :default section (and optionally others))"
+	 end
+	 f.close
+	 config
+      end
+
+      def Cfg.find(options,key)
+	 if options[key].nil? 
+	    raise "#{key} undefined!" 
+	 end
+	 options[key]
+      end
+   end
+
+   # 
+   # Class to wrap-up IOC run on local machine
+   #
+   class IOCLocal < IOC
+      DEFAULT_TIMEOUT = 2
+      def initialize(options={})
+	 savedir = Dir.pwd
+	 topDir = Cfg.find(options,"topDir")
+	 Dir.chdir(topDir)
+	 binDir = Cfg.find(options,"binDir")
+	 Dir.chdir(Cfg.find(options,"bootDir"))
+	 hostArch = options["hostArch"].nil? ? EPICS_HOST_ARCH : options["hostArch"]
+	 cmd = Cfg.find(options,"cmd")
+	 ioc = Cfg.find(options,"ioc")
+	 @startcmd = "#{topDir}/#{binDir}/#{hostArch}/#{ioc} #{cmd}"
+	 @buffer = ''
+	 @timeout = options[:timeout].nil? ? DEFAULT_TIMEOUT : options[:timeout]
+      end
+      def start
+	 @pipe = IO.popen(@startcmd,"r+")
+	 sleep(5)
+	 read_loop
+      end
+      def read
+	 read_loop
+	 buf = @buffer
+	 @buffer = ''
+	 buf
+      end
+      def command(msg)
+	 @pipe.puts msg
+      end
+      def start_timer
+	 @start_time = Time.now
+      end
+      def timeout?(val = @timeout)
+	 (Time.now - @start_time) > val
+      end
+      
+      def read_loop(timeout = @timeout)
+	 start_timer
+	 loop do
+	    empty = true
+	    begin 
+	       @buffer << @pipe.read_nonblock(1024)
+	       empty = false
+	    rescue Errno::EAGAIN
+	       if empty 
+		  if timeout? then break 
+		  else
+		     sleep(timeout/3)
+		     next
+		  end
+	       else
+		  #reset timer and continue
+		  start_timer
+		  next
+	       end
+	    end
+	 end
+      end
+
+   end
+
+   class IOCviaSSH < IOC
+   end
+end

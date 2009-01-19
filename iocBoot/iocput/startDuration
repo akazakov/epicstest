@@ -1,0 +1,8 @@
+caPutCallback -C 10 -S .1 mrkasynleaf2 1.1 1.2
+caPutCallback -C 10 -S .1 mrkasynleaf2 1.3 1.4
+caPutCallback -C 10 -S .1 mrkasynleaf2 1.5 1.6
+caPutCallback -C 10 -S .1 mrkasynleaf2 1.7 1.8
+caPutCallback -C 10 -S .1 mrkasynhead0 1.1 1.2
+caPutCallback -C 10 -S .1 mrkasynhead1 1.1 1.2
+caPutCallback  -S 10 mrkfanhead0.LNK1 0 mrkasynhead1
+caPutCallback -C 10 -S 1 mrkasyn 1.1 1.2

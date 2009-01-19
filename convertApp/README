@@ -1,0 +1,148 @@
+This directory contains databases and files for testing conversions:
+
+a) Database links using PP and NPP
+b) Database links using CA and CAP
+c) Channel Access Links
+
+Two tests are provided. The first is for non DBF_MENU and DBF_DEVICE records.
+The second checks these two types for DBR_STRING requests.
+
+SHORT INSTRUCTIONS:
+
+1) On     vxWorks IOCs                             host IOCs
+   Boot master IOC from st.master       ../../bin/<arch>/convert master.main
+   Boot client IOC from st.client       ../../bin/<arch>/convert client.main
+
+2) On HOST execute
+   ../../bin/<arch>/testConvert > temp
+   ../../bin/<arch>/testConvertENUM > temp1
+
+   NOTE: The first command takes a bit longer (order of 1 minute)
+
+3) Run the commands
+   diff temp 15JUL2002mv167.rpt
+   diff temp1 29APR1996ENUM.rpt
+
+
+NOTE: 15JUL2002mv167.rpt is for both client and master being mv167s/mv162s.
+      3.14.0b3-hpux.rpt is for base 3.14.0beta3, both master and client being hpux.
+      3.14.0b3-Mhpux-Cmv167.rpt is for hpux master and mv167/mv162 client.
+      3.14.0b3-Mmv167-Chpux.rpt vice versa.
+   The report filenames for R3.14.9 results use this key:
+      x86 means linux-x86; sol means solaris-sparc; ppc means vxWorks-ppc60x
+      e.g. 3.14.9-Mx86-Cx86.rpt is for linux-x86 on both,
+      3.14.9-Msol-Csol.rpt is for Solaris-sparc on both.
+      
+      Results may differ for other architectures. Should they?
+         I'm sure the differences relate to whether char is signed, but there's
+         something else involved as well (endianness?).
+
+
+The complete set of files in src are:
+
+typeRecord.db - Record Definition for new record type.
+	        This type allows any DBF_TYPE DBF_STRING,...DBF_DOUBLE
+rtpeRecord.c - Record support module.
+
+convertClient.c		A program to generate convertClient.db
+convertMaster.c		A program to generate convertMaster.db
+convertClientENUM.c 	A program to generate convertClientENUM.c
+convertMasterENUM.c 	A program to generate convertMasterENUM.c
+
+testConvert.c		A program to check all conversions except request type
+			DBR_STRING for DBR_ENUM records (MENU and DEVICE)
+testConvertENUM.c	A program to check request type
+			DBR_STRING for DBR_ENUM records (MENU and DEVICE)
+
+st.convertClient	Startup file for client
+st.convertMaster	Startup file for master
+
+convertClient.db	Test client database for testConvert
+convertMaster.db	Test master database for testConvert
+convertClientENUM.db	Test client database for testConvertENUM
+convertMasterENUM.db	Test master database for testConvertENUM
+
+
+convertClient.db has records of the form
+
+SCget<type>to<type> - Scalar get converting <type> to <type>
+SCput<type>to<type> - Scalar put converting <type> to <type>
+ACget<type>to<type> - Array get converting <type> to <type>
+ACput<type>to<type> - Array put converting <type> to <type>
+
+<type> includes STRING,CHAR,UCHAR,... DOUBLE
+
+convertMaster.db has records
+
+Following hold result
+SMgetCa<type>to<type> - Scalar Master to Master get CP
+SMgetDb<type>to<type> - Scalar Master to Master get NPP
+SMputCa<type>to<type> - Scalar Master to Master put CP (SMtoMCa does put)
+SMputDb<type>to<type> - Scalar Master to Master put PP (SMtoMDb does put)
+Following perform actual puts and FLNK to <type>to<type + 1>
+SMtoC<type>to<type> - Scalar Master to Client
+SMtoMCa<type>to<type> - Scalar put to SMputCa<type>to<type>
+SMtoMDb<type>to<type> - Scalar put to SMputDb<type>to<type>
+Following get things going
+Sput<type> - Record tp which testConvert writes
+SFanout<type> - Fanout to SMtoMDb,SMtoMCa,SMtoC [<type>toSTRING]
+/*Following are like above except arrays
+AMgetCa<type>to<type>
+AMgetDb<type>to<type>
+AMputCa<type>to<type>
+AMputDb<type>to<type>
+AMtoC<type>to<type>
+AMtoMCa<type>to<type>
+AMtoMDb<type>to<type>
+
+convertMaster.db is structured as follows: (Similar records fot arrays)
+Sput<type>
+  FLNK SFanout<type>
+    LNK1 SMtoMDb<type>toSTRING 
+	FLNK  SMtoMDb<type>toCHAR ... ->SMtoMDb<type>toDOUBLE
+	INP Sput<type> NPP
+	OUT SMputDb<type>toSTRING PP
+    LNK2 SMtoMCa<type>toSTRING 
+	FLNK  SMtoMCa<type>toCHAR ... ->SMtoMCa<type>toDOUBLE
+	INP Sput<type> NPP
+	OUT SMputCa<type>toSTRING CA
+    LNK3 SMtoC<type>toSTRING
+	FLNK  SMtoC<type>toCHAR ... ->SMtoC<type>toDOUBLE
+	INP Sput<type> NPP
+	OUT SCput<type>toSTRING CA
+In addition
+SMgetCa<type>to<type>
+    INP SMtoMDb<type>to<type> CP
+SMgetDb<type>to<type>
+    SCAN ".1 second"
+    INP SMtoMDb<type>to<type> NPP
+
+
+For ENUM test the following records are created
+
+Client
+
+enumCmbbi - Record that is target of enumCget* and enumCput*
+
+Master
+
+enumMCambbi
+enumMDbmbbi
+enumCgetDTYP
+enumCgetPRIO
+enumCgetVAL
+enumCputDTYP
+enumCputPRIO
+enumCputVAL
+enumMCagetDTYP
+enumMCagetPRIO
+enumMCagetVAL
+enumMCaputDTYP
+enumMCaputPRIO
+enumMCaputVAL
+enumMDbgetDTYP
+enumMDbgetPRIO
+enumMDbgetVAL
+enumMDbputDTYP
+enumMDbputPRIO
+enumMDbputVAL

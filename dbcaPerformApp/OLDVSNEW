@@ -1,0 +1,24 @@
+OLD
+
+5 second scan rate
+
+master  34% idle
+client  69% idle
+
+memory
+
+master alloc 7201968
+client alloc 6050308	
+
+
+
+NEW
+
+rate		5 sec	2 sec	1 sec .5 second (event lost)
+master		82%	67%	41%	20%
+client		90%	79%	60%	60%
+
+memory
+
+master	alloc 5850124
+client  alloc 3457272

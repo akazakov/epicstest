@@ -1,0 +1,6 @@
+dbLoadDatabase("../../dbd/common.dbd")
+common_registerRecordDeviceDriver(pdbbase)
+dbLoadRecords("../../putApp/Db/cachenotify.db")
+dbLoadRecords("../../putApp/Db/ezcaNotify.db")
+dbLoadRecords("../../putApp/Db/notifyDuration.db")
+iocInit

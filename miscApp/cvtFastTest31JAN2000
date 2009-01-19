@@ -1,0 +1,42 @@
+
+Test cvtLongToOctalString and cvtLongToHexString
+LONG_MAX
+  val=2147483647
+  cvtLongToOctalString: "017777777777"
+    strtol:             2147483647 
+    scanf[%li]:         2147483647 
+  cvtLongToHexString:   "0x7fffffff"
+    strtol:             2147483647 
+    scanf[%li]:         2147483647 
+LONG_MIN
+  val=-2147483648
+  cvtLongToOctalString: "-020000000000"
+    strtol:             -2147483648 
+    scanf[%li]:         -2147483648 
+  cvtLongToHexString:   "-0x80000000"
+    strtol:             -2147483648 
+    scanf[%li]:         -2147483648 
+-1
+  val=-1
+  cvtLongToOctalString: "-01"
+    strtol:             -1 
+    scanf[%li]:         -1 
+  cvtLongToHexString:   "-0x1"
+    strtol:             -1 
+    scanf[%li]:         -1 
+0
+  val=0
+  cvtLongToOctalString: "0"
+    strtol:             0 
+    scanf[%li]:         0 
+  cvtLongToHexString:   "0"
+    strtol:             0 
+    scanf[%li]:         0 
+1
+  val=1
+  cvtLongToOctalString: "01"
+    strtol:             1 
+    scanf[%li]:         1 
+  cvtLongToHexString:   "0x1"
+    strtol:             1 
+    scanf[%li]:         1 

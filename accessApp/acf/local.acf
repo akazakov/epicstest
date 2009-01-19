@@ -1,0 +1,56 @@
+UAG(uag1) {$(user)}
+HAG(hag1) {$(host)}
+HAG(iocRemote) {$(iocRemote)}
+ASG(DEFAULT) {
+	RULE(1,READ)
+	RULE(0,WRITE,TRAPWRITE) {
+		UAG(uag1)
+		HAG(hag1)
+	}
+}
+ASG(allowRestart) {
+	RULE(1,WRITE) {
+		UAG(uag1)
+	}
+}
+ASG(changePermit) {
+        INPB(mrk$(where)remoteAccess)
+	RULE(1,WRITE) {
+		UAG(uag1)
+	}
+        RULE(1,READ) {
+                CALC("b>=1")
+                HAG(iocRemote)
+        }
+        RULE(0,WRITE) {
+                CALC("b>=2")
+                HAG(iocRemote)
+        }
+}
+ASG(protected) {
+	INPA(mrk$(where)hostAccess)
+	INPB(mrk$(where)remoteAccess)
+	RULE(1,READ) {
+		CALC("a>=1")
+		UAG(uag1)
+		HAG(hag1)
+	}
+	RULE(0,WRITE) {
+		CALC("a>=2")
+		UAG(uag1)
+		HAG(hag1)
+	}
+	RULE(1,WRITE) {
+		CALC("a=3")
+		UAG(uag1)
+		HAG(hag1)
+	}
+	RULE(1,READ) {
+		CALC("b>=1")
+		HAG(iocRemote)
+	}
+	RULE(0,WRITE) {
+		CALC("b>=2")
+		HAG(iocRemote)
+	}
+}

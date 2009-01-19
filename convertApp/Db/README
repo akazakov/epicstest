@@ -1,0 +1,7 @@
+convertClient.db convertClientENUM.db convertMaster.db convertMasterENUM.db
+are all automatically generated. To generate issue the commands:
+
+../../bin/$HOST_ARCH/convertClient > convertClient.db
+../../bin/$HOST_ARCH/convertClientENUM > convertClientENUM.db
+../../bin/$HOST_ARCH/convertMaster > convertMaster.db
+../../bin/$HOST_ARCH/convertMasterENUM > convertMasterENUM.db

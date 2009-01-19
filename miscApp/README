@@ -1,0 +1,73 @@
+This is a just a "grabbag" of tests
+
+Boot the IOC from ../iocBoot/iocmisc
+
+using st.cmd   resp.   ../../bin/<arch>/misc stcmd.host
+
+
+		Test of Linear Conversions
+
+execute medm adl/testLinear.adl
+
+It tests unipolar, old bipolar, roff bipolar and eoff bipolar
+for both ai and ao records.
+
+
+PARTIAL test of devXXXSymb NOT READY FOR 3.14
+
+		PARTIAL test of devXXXSymb
+
+NOT IMPLEMENTED FOR 3.14
+execute medm adl/symbTest.adl
+
+When outputs are changed the inputs should change
+
+On ioc execute
+   sp testStart
+all inputs should change
+
+The test can be stopped by executing
+
+testStop
+
+
+		Test of errlog
+
+
+Change st.cmd to point to your log server machine.
+
+ON HOST
+
+cd logServer
+Define the env parameter EPICS_BASE_BIN
+rm iocLog
+rc2.logServer start
+
+The logServer can be stopped via the command:
+
+rc2.logServer stop
+
+ON IOC (On vxWorks make sure you are in iocsh)
+
+generrMessage 1
+generrlogPrintf 1
+errlogTest 1
+
+At any time console messages can be stopped by
+
+eltc 0
+
+and restarted by 
+
+eltc 1
+
+The following console command changes severity to log
+
+errlogSetSevToLog <number>
+
+
+			File Descriptor Usage
+
+On vxWorks console execute the command
+
+fdUsage

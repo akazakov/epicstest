@@ -1,0 +1,295 @@
+
+#Test Syntax with syntax.acf
+mrkLOCALprotected.VAL anj uranus status=0 get Yes put No
+mrkLOCALprotected.HIHI anj uranus status=0 get No put No
+mrkLOCALprotected.VAL xyz xyz status=0 get Yes put No
+mrkLOCALasg3.VAL anj uranus status=0 get Yes put No
+mrkLOCALdefault.VAL anj uranus status=0 get Yes put No
+UAG(uag0)
+UAG(uag1) {user1}
+UAG(uag2) {user1,user2,user3}
+HAG(hag0)
+HAG(hag1) {host1}
+HAG(hag2) {host1,host2,host3,xx.yy.zz}
+ASG(DEFAULT) {
+	RULE(0,READ,NOTRAPWRITE)
+	MEMBERLIST
+		asg3 Record:mrkLOCALasg3
+			 anj uranus ASL0 READ NOTRAPWRITE
+		<null> Record:mrkLOCALdefault
+			 anj uranus ASL0 READ NOTRAPWRITE
+		allowRestart Record:mrkLOCALrestartAS
+		changePermit Record:mrkLOCALhostAccess
+		changePermit Record:mrkLOCALremoteAccess
+		protected Record:mrkLOCALprotected
+			 anj uranus ASL0 READ NOTRAPWRITE
+			 anj uranus ASL1 NONE NOTRAPWRITE
+			 xyz xyz ASL0 READ NOTRAPWRITE
+}
+ASG(asg0)
+ASG(asg1) {
+	INPA(mrkLOCALasginpa) INVALID value=0.000000
+	INPB(pv:0[]<>.XYZ) INVALID value=0.000000
+	RULE(0,READ,NOTRAPWRITE)
+	RULE(0,READ,NOTRAPWRITE) {
+		CALC("a=1?(b=1?1:0):0") result=FALSE
+	}
+	RULE(1,WRITE,NOTRAPWRITE) {
+		UAG(uag1)
+		HAG(hag1)
+	}
+	RULE(0,WRITE,NOTRAPWRITE) {
+		UAG(uag1,uag2)
+		HAG(hag1,hag2)
+		CALC("a=1?(b=1?1:0):0") result=FALSE
+	}
+}
+ASG(asg2) {
+	RULE(0,WRITE,NOTRAPWRITE) {
+		UAG(uag1)
+	}
+}
+
+#Test default.acf
+No UAGs
+No HAGs
+ASG(DEFAULT) {
+	RULE(0,READ,NOTRAPWRITE)
+	MEMBERLIST
+		asg3 Record:mrkLOCALasg3
+			 anj uranus ASL0 READ NOTRAPWRITE
+		<null> Record:mrkLOCALdefault
+			 anj uranus ASL0 READ NOTRAPWRITE
+		allowRestart Record:mrkLOCALrestartAS
+		changePermit Record:mrkLOCALhostAccess
+		changePermit Record:mrkLOCALremoteAccess
+		protected Record:mrkLOCALprotected
+			 anj uranus ASL0 READ NOTRAPWRITE
+			 anj uranus ASL1 NONE NOTRAPWRITE
+			 xyz xyz ASL0 READ NOTRAPWRITE
+}
+
+#Test local.acf
+mrkLOCALasg3.VAL anj uranus status=0 get Yes put Yes
+mrkLOCALdefault.VAL anj uranus status=0 get Yes put Yes
+mrkLOCALprotected.VAL anj uranus status=0 get No put No
+mrkLOCALprotected.VAL xyz xyz status=0 get No put No
+mrkLOCALprotected.VAL anj uranus status=0 get Yes put No
+mrkLOCALprotected.HIHI anj uranus status=0 get Yes put No
+UAG(uag1) {anj,jhill}
+HAG(hag1) {quark,phoebus,uranus,uranus.aps.anl.gov}
+HAG(iocRemote) {iocremote}
+ASG(DEFAULT) {
+	RULE(1,READ,NOTRAPWRITE)
+	RULE(0,WRITE,TRAPWRITE) {
+		UAG(uag1)
+		HAG(hag1)
+	}
+	MEMBERLIST
+		asg3 Record:mrkLOCALasg3
+			 anj uranus ASL0 WRITE TRAPWRITE
+		<null> Record:mrkLOCALdefault
+			 anj uranus ASL0 WRITE TRAPWRITE
+}
+ASG(allowRestart) {
+	RULE(1,WRITE,NOTRAPWRITE) {
+		UAG(uag1)
+	}
+	MEMBERLIST
+		allowRestart Record:mrkLOCALrestartAS
+}
+ASG(changePermit) {
+	INPB(mrkLOCALremoteAccess)   VALID value=1.000000
+	RULE(1,WRITE,NOTRAPWRITE) {
+		UAG(uag1)
+	}
+	RULE(1,READ,NOTRAPWRITE) {
+		HAG(iocRemote)
+		CALC("b>=1") result=TRUE
+	}
+	RULE(0,WRITE,NOTRAPWRITE) {
+		HAG(iocRemote)
+		CALC("b>=2") result=FALSE
+	}
+	MEMBERLIST
+		changePermit Record:mrkLOCALhostAccess
+		changePermit Record:mrkLOCALremoteAccess
+}
+ASG(protected) {
+	INPA(mrkLOCALhostAccess)   VALID value=1.000000
+	INPB(mrkLOCALremoteAccess)   VALID value=1.000000
+	RULE(1,READ,NOTRAPWRITE) {
+		UAG(uag1)
+		HAG(hag1)
+		CALC("a>=1") result=TRUE
+	}
+	RULE(0,WRITE,NOTRAPWRITE) {
+		UAG(uag1)
+		HAG(hag1)
+		CALC("a>=2") result=FALSE
+	}
+	RULE(1,WRITE,NOTRAPWRITE) {
+		UAG(uag1)
+		HAG(hag1)
+		CALC("a=3") result=FALSE
+	}
+	RULE(1,READ,NOTRAPWRITE) {
+		HAG(iocRemote)
+		CALC("b>=1") result=TRUE
+	}
+	RULE(0,WRITE,NOTRAPWRITE) {
+		HAG(iocRemote)
+		CALC("b>=2") result=FALSE
+	}
+	MEMBERLIST
+		protected Record:mrkLOCALprotected
+			 anj uranus ASL0 READ NOTRAPWRITE
+			 anj uranus ASL1 READ NOTRAPWRITE
+			 xyz xyz ASL0 NONE NOTRAPWRITE
+}
+
+#Set mrkLOCALhostAccess No Access
+mrkLOCALprotected.VAL anj uranus status=0 get No put No
+mrkLOCALprotected.HIHI anj uranus status=0 get No put No
+ASG(protected) {
+	INPA(mrkLOCALhostAccess) value=0.000000
+	INPB(mrkLOCALremoteAccess) value=1.000000
+	RULE(1,READ,NOTRAPWRITE) {
+		UAG(uag1)
+		HAG(hag1)
+		CALC("a>=1") result=FALSE
+	}
+	RULE(0,WRITE,NOTRAPWRITE) {
+		UAG(uag1)
+		HAG(hag1)
+		CALC("a>=2") result=FALSE
+	}
+	RULE(1,WRITE,NOTRAPWRITE) {
+		UAG(uag1)
+		HAG(hag1)
+		CALC("a=3") result=FALSE
+	}
+	RULE(1,READ,NOTRAPWRITE) {
+		HAG(iocRemote)
+		CALC("b>=1") result=TRUE
+	}
+	RULE(0,WRITE,NOTRAPWRITE) {
+		HAG(iocRemote)
+		CALC("b>=2") result=FALSE
+	}
+}
+ASG(protected)
+	MEMBERLIST
+		protected Record:mrkLOCALprotected
+			 anj uranus ASL0 NONE NOTRAPWRITE
+			 anj uranus ASL1 NONE NOTRAPWRITE
+			 xyz xyz ASL0 NONE NOTRAPWRITE
+
+#Set mrkLOCALhostAccess Read Access
+mrkLOCALprotected.VAL anj uranus status=0 get Yes put No
+mrkLOCALprotected.HIHI anj uranus status=0 get Yes put No
+ASG(protected) {
+	INPA(mrkLOCALhostAccess) value=1.000000
+	INPB(mrkLOCALremoteAccess) value=1.000000
+	RULE(1,READ,NOTRAPWRITE) {
+		UAG(uag1)
+		HAG(hag1)
+		CALC("a>=1") result=TRUE
+	}
+	RULE(0,WRITE,NOTRAPWRITE) {
+		UAG(uag1)
+		HAG(hag1)
+		CALC("a>=2") result=FALSE
+	}
+	RULE(1,WRITE,NOTRAPWRITE) {
+		UAG(uag1)
+		HAG(hag1)
+		CALC("a=3") result=FALSE
+	}
+	RULE(1,READ,NOTRAPWRITE) {
+		HAG(iocRemote)
+		CALC("b>=1") result=TRUE
+	}
+	RULE(0,WRITE,NOTRAPWRITE) {
+		HAG(iocRemote)
+		CALC("b>=2") result=FALSE
+	}
+}
+ASG(protected)
+	MEMBERLIST
+		protected Record:mrkLOCALprotected
+			 anj uranus ASL0 READ NOTRAPWRITE
+			 anj uranus ASL1 READ NOTRAPWRITE
+			 xyz xyz ASL0 NONE NOTRAPWRITE
+
+#Set mrkLOCALhostAccess L0 Write Access
+mrkLOCALprotected.VAL anj uranus status=0 get Yes put Yes
+ASG(protected) {
+	INPA(mrkLOCALhostAccess) value=2.000000
+	INPB(mrkLOCALremoteAccess) value=1.000000
+	RULE(1,READ,NOTRAPWRITE) {
+		UAG(uag1)
+		HAG(hag1)
+		CALC("a>=1") result=TRUE
+	}
+	RULE(0,WRITE,NOTRAPWRITE) {
+		UAG(uag1)
+		HAG(hag1)
+		CALC("a>=2") result=TRUE
+	}
+	RULE(1,WRITE,NOTRAPWRITE) {
+		UAG(uag1)
+		HAG(hag1)
+		CALC("a=3") result=FALSE
+	}
+	RULE(1,READ,NOTRAPWRITE) {
+		HAG(iocRemote)
+		CALC("b>=1") result=TRUE
+	}
+	RULE(0,WRITE,NOTRAPWRITE) {
+		HAG(iocRemote)
+		CALC("b>=2") result=FALSE
+	}
+}
+ASG(protected)
+	MEMBERLIST
+		protected Record:mrkLOCALprotected
+			 anj uranus ASL0 WRITE NOTRAPWRITE
+			 anj uranus ASL1 READ NOTRAPWRITE
+			 xyz xyz ASL0 NONE NOTRAPWRITE
+
+#Set mrkLOCALhostAccess L1 Write Access
+mrkLOCALprotected.HIHI anj uranus status=0 get Yes put Yes
+ASG(protected) {
+	INPA(mrkLOCALhostAccess) value=3.000000
+	INPB(mrkLOCALremoteAccess) value=1.000000
+	RULE(1,READ,NOTRAPWRITE) {
+		UAG(uag1)
+		HAG(hag1)
+		CALC("a>=1") result=TRUE
+	}
+	RULE(0,WRITE,NOTRAPWRITE) {
+		UAG(uag1)
+		HAG(hag1)
+		CALC("a>=2") result=TRUE
+	}
+	RULE(1,WRITE,NOTRAPWRITE) {
+		UAG(uag1)
+		HAG(hag1)
+		CALC("a=3") result=TRUE
+	}
+	RULE(1,READ,NOTRAPWRITE) {
+		HAG(iocRemote)
+		CALC("b>=1") result=TRUE
+	}
+	RULE(0,WRITE,NOTRAPWRITE) {
+		HAG(iocRemote)
+		CALC("b>=2") result=FALSE
+	}
+}
+ASG(protected)
+	MEMBERLIST
+		protected Record:mrkLOCALprotected
+			 anj uranus ASL0 WRITE NOTRAPWRITE
+			 anj uranus ASL1 WRITE NOTRAPWRITE
+			 xyz xyz ASL0 NONE NOTRAPWRITE

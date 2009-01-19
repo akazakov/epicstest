@@ -1,0 +1,82 @@
+# = test configuration file
+# good for reference
+:default: &default
+  debug_level: 5
+
+# == :hosts:
+# should contain at least +localhost:+ definition, as long as others which you intend to use for your tests
+# typical config has +localhost host1 host2 host3+
+:hosts: &hosts
+  localhost:
+    epicsHostArch: darwin-x86
+  host1:
+    epicsHostArch: freebsd-x86
+    hostname: burdock
+  host2:
+    epcicsHostArch: osf-alpha 
+    hostname: orange
+  host3:
+    epicsHostArch: linux-x86
+    hostname: durian
+  
+# +topDir+ is used to start IOCs
+:paths: &paths
+  topDir: /Users/tyoma/epics/soft-test
+  binDir: bin
+  referenceDir: reference
+
+# All testCases need to include this part !!!!!!!!!!!! 
+# testcase 
+# |---- hosts
+# |        |------host1: hostname, epicsHostArch ...
+# |        |------host2 ...
+# |        |------host3 ...
+# |
+# |-----IOC0
+# |      |-------"host1" 
+# |      |---- ....
+# |      
+# |-----IOC1 ...
+# ...
+# |-----COMMAND0 
+# |       |-------"host2"
+# |       ....
+# ...
+#
+#
+:includes: &includes
+  hosts: *hosts
+  <<: *paths
+  <<: *default
+
+:defaultIOC: &defaultIOC
+   <<: *paths
+   ioc: common
+
+:defaultIOCSSH: &defaultIOCSSH
+   <<: *defaultIOC
+   host: localhost
+   user: tyoma
+   type: SSH
+
+:defaultCommand: &defaultCommand
+   <<: *paths
+   type: SH
+
+:defaultCommandSSH: &defaultCommandSSH
+   <<: *paths
+   type: SSH
+   #host: burdock.linac.kek.jp
+   host: localhost
+   user: tyoma
+
+MyTestCase: 
+  <<: &includes
+  IOC0:
+    <<: *defaultIOCSSH
+    bootDir: iocBoot/iocalarm
+    cmd: stcmd.host
+  COMMAND0:
+    <<: *defaultCommandSSH
+  COMMAND1:
+    <<: *defaultCommand

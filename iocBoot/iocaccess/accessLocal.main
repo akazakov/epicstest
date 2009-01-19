@@ -1,0 +1,11 @@
+asSetFilename("../../accessApp/acf/local.acf")
+asSetSubstitutions('where=LOCAL,user="anj,jhill",host="quark,phoebus,uranus,uranus.aps.anl.gov",iocRemote=iocRemote')
+dbLoadDatabase("../../dbd/access.dbd")
+access_registerRecordDeviceDriver(pdbbase)
+dbLoadRecords("../../accessApp/db/local.db")
+iocInit
+dbpf("mrkLOCALasg3","1")
+dbpf("mrkLOCALdefault","1")
+dbpf("mrkLOCALprotected","1")
+dbpf("mrkLOCALhostAccess","1")
+dbpf("mrkLOCALremoteAccess","1")
