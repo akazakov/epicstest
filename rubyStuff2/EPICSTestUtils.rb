@@ -73,15 +73,14 @@ module EPICSTestUtils
 	class TestCase
 		include DebugPrint
 		attr_accessor :formatter, :ioc, :command
-		attr_reader :options, :global_options, :title
+		attr_reader :options, :title
 		def initialize(formatter, options = {})
 			@formatter=formatter
 			@test=[]
 			@ioc=[]
 			@command=[]
 			@title = self.class.name
-			@global_options = options
-			@options = Cfg.find(options,@title)
+			@options = Cfg.find(options, @title)
 			@debug_level = Cfg.find(@options, 'debug_level')
 		end
 
@@ -146,7 +145,9 @@ module EPICSTestUtils
 			setup
 			formatter.header(self)
 			@test.each do |test|
-				test.run
+				catch :assertion_failed do
+					test.run
+				end
 				formatter.report(test)
 			end
 			formatter.footer(self)
@@ -185,8 +186,8 @@ module EPICSTestUtils
 			puts "1..#{context.test_count}"
 		end
 		def report(context)
-			if context.result == :OK then puts "ok - #{context.description} # #{context.explanation}" 
-			else puts "not_ok - #{context.description} # #{context.result} #{context.explanation}"
+			if context.result == :OK then puts "ok - #{context.title} #{context.description} # #{context.explanation}" 
+			else puts "not_ok - #{context.title} #{context.description} # #{context.result} #{context.explanation}"
 			end
 		end
 		def put(string)
@@ -202,26 +203,34 @@ module EPICSTestUtils
 	# Real Test Implementation should redefine the test routine.
 	#
 	class Test
-		@@title = "Test Title"
-		@@description = "Test Description"
-		@@explanation = "Test is not implemented yet"
 		attr_accessor :formatter
-		def initialize(formatter,test_case)
-			@formatter = formatter
-					@test_case = test_case
+		attr_reader	:title, :description, :explanation
+		def initialize(test_case)
+			@title = self.class.name
+			@description = ""
+			@explanation = ""
+			@formatter = test_case.formatter
+			@test_case = test_case
 			@result = :TODO
-		end
-		def title
-			@@title
-		end
-		def description
-			@@description
-		end
-		def explanation
-			@@explanation
 		end
 		def run
 			@formatter.put("Run:Nothing here")
+		end
+		def assert(val)
+			unless val 
+				@result = :NOT_OK
+				throw :assertion_failed 
+			else
+				@result = :OK
+			end
+		end
+		def assert_equal(a,b)
+			unless a == b 
+				@result = :NOT_OK
+				throw :assertion_failed 
+			else
+				@result = :OK
+			end
 		end
 		def result
 			@result
@@ -232,6 +241,7 @@ module EPICSTestUtils
 		def cmd
 			@test_case.command
 		end
+
 	end
 
 	# This is a template class
@@ -314,6 +324,43 @@ module EPICSTestUtils
 	# Config handling Stuff
 	#
 	module Cfg
+		class Config
+			attr_accessor :options
+			def initialize(options = {}, top = nil)
+				@options = options
+				@top = top
+			end
+
+			def find(name)
+				if @options[name].nil?
+					@top ? @top.find(name) : nil
+				else
+					@options[name]
+				end
+			end
+
+			def each(&block)
+				@options.each &block
+			end
+
+			def method_missing(method_id, *arg, &block)
+				val = self.find(method_id.to_s)
+				if val
+					val
+				else
+					super
+				end
+			end
+		end
+
+		@@default = nil
+		@@hosts_hash = {}
+		def Cfg.default
+			@@default
+		end
+		def Cfg.h
+			@@h
+		end
 		def Cfg.load(filename)
 			f = File.open(filename,"r")
 			config = YAML::load(f)
@@ -321,6 +368,12 @@ module EPICSTestUtils
 			if config[:default].nil? or config[:hosts].nil? then 
 				raise "Config file should contain :default and :hosts section (and optionally others))"
 			end
+			@@default = Config.new(config[:default])
+			config[:hosts].each_pair do |k,v|
+				v["alias"] = k
+				@@hosts_hash[k] = Config.new(v,@@default)
+			end
+			@@h = Config.new(@@hosts_hash,@@default)
 			f.close
 			config
 		end
@@ -405,10 +458,18 @@ module EPICSTestUtils
 		DEFAULT_TIMEOUT = 2
 		attr_accessor :buffer, :err_buffer
 		def initialize(options={})
+			hosts = options["hosts"]
+			debug(hosts,4)
+			remoteHostAlias = options["host"]
+			debug(remoteHostAlias,4)
+			remoteHostOptions = hosts[remoteHostAlias]
+			debug(remoteHostOptions,4)
+			remoteHostname = remoteHostOptions["hostname"]
+			remoteHostArch = remoteHostOptions["epicsHostArch"]
 			topDir = Cfg.find(options,"topDir")
 			binDir = Cfg.find(options,"binDir")
 			bootDir = Cfg.find(options,"bootDir")
-			hostArch = options["hostArch"].nil? ? EPICS_HOST_ARCH : options["hostArch"]
+			hostArch = remoteHostArch
 			cmd = Cfg.find(options,"cmd")
 			ioc = Cfg.find(options,"ioc")
 			@localBinDir = "#{topDir}/#{binDir}"

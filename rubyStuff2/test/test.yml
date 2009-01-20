@@ -8,14 +8,12 @@
 # typical config has +localhost host1 host2 host3+
 :hosts: &hosts
   localhost:
+    hostname: tyomac
     epicsHostArch: darwin-x86
   host1:
     epicsHostArch: freebsd-x86
     hostname: burdock
   host2:
-    epcicsHostArch: osf-alpha 
-    hostname: orange
-  host3:
     epicsHostArch: linux-x86
     hostname: durian
   
@@ -46,12 +44,13 @@
 #
 :includes: &includes
   hosts: *hosts
+  user: tyoma
   <<: *paths
   <<: *default
 
 :defaultIOC: &defaultIOC
-   <<: *paths
-   ioc: common
+  <<: *includes
+  ioc: common
 
 :defaultIOCSSH: &defaultIOCSSH
    <<: *defaultIOC
@@ -60,18 +59,20 @@
    type: SSH
 
 :defaultCommand: &defaultCommand
-   <<: *paths
-   type: SH
+  <<: *includes
+  type: SH
 
 :defaultCommandSSH: &defaultCommandSSH
-   <<: *paths
-   type: SSH
-   #host: burdock.linac.kek.jp
-   host: localhost
-   user: tyoma
+  <<: *includes
+  type: SSH
+  #host: burdock.linac.kek.jp
+  host: localhost
+  user: tyoma
 
 MyTestCase: 
-  <<: &includes
+  <<: *includes
+  ioc: exampleIOC
+  tmpDir: tmp/exioc
   IOC0:
     <<: *defaultIOCSSH
     bootDir: iocBoot/iocalarm
