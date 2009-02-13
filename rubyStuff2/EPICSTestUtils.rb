@@ -355,12 +355,25 @@ module EPICSTestUtils
 
 		@@default = nil
 		@@hosts_hash = {}
+		@@testCasesHash = {}
 		def Cfg.default
 			@@default
 		end
 		def Cfg.h
 			@@h
 		end
+		def Cfg.c
+			@@c
+		end
+		# Load YAML file which is a hash. Three main parts must be present: 
+		# - :default
+		# - :hosts
+		# - :testCases
+		#
+		# This method builds a config-tree
+		# :defaults <- host
+		# host <- testcase.ioc
+		# 
 		def Cfg.load(filename)
 			f = File.open(filename,"r")
 			config = YAML::load(f)
@@ -373,7 +386,22 @@ module EPICSTestUtils
 				v["alias"] = k
 				@@hosts_hash[k] = Config.new(v,@@default)
 			end
-			@@h = Config.new(@@hosts_hash,@@default)
+			@@h = Config.new(@@hosts_hash)
+			config[:testCases].each_pair do |k,v|
+				caseConfigHash = Hash.new
+				v.each_pair do |key,val|
+					if (IOC_NAMES.member?(key) || COMMAND_NAMES.member?(key)) && val.class == Hash 
+						if val["host"] == '' then val["host"] = "localhost" end
+						iocHost = val["host"]
+						caseConfigHash[key] = Config.new(val,@@h.find(iocHost))
+					else 
+						caseConfigHash[key] = val
+					end
+				end
+				v["alias"] = k
+				@@testCasesHash[k] = Config.new(caseConfigHash,@@default)
+			end
+			@@c = Config.new(@@testCasesHash)
 			f.close
 			config
 		end

@@ -1,4 +1,5 @@
 require '../EPICSTestUtils.rb'
+include EPICSTestUtils
 class FailingTest < EPICSTestUtils::Test
 	def run
 		@description = "Should fail"
@@ -55,25 +56,37 @@ class RemoteHostnameTest < EPICSTestUtils::Test
 	 end
 end
 
+class RemoteHostnameTestNew < EPICSTestUtils::Test
+   def run
+		 hosts = @test_case.options["hosts"]
+		 user = @test_case.options["user"]
+		 topDir = @test_case.options["topDir"]
+		 Cfg.h.each do |k,v|
+			 hostname = v.hostname
+			 connection = Net::SSH.start(v.hostname, v.user)
+			 rem_hostname = connection.exec!("hostname -s")
+			 assert(rem_hostname.strip == v.hostname)
+		 end
+	 end
+end
+
 
 class RemoteBuildExampleIOC < EPICSTestUtils::Test
 	def run
-		hosts = @test_case.options["hosts"]
-		user = @test_case.options["user"]
-		topDir = @test_case.options["topDir"]
 		tmpDir = @test_case.options["tmpDir"]
 		iocName = @test_case.options["ioc"]
-		hosts.each_pair do |k,v| 
-			hostname = v["hostname"]
-			remoteHostArch = v["epicsHostArch"]
-			makeApp = topDir.strip + "/bin/" + remoteHostArch.strip + "/makeBaseApp.pl"
-			connection = Net::SSH.start(hostname.dup, user)
+		Cfg.h.each do |k,v| 
+			makeApp = v.epicsTopDir.strip + "/bin/" + v.epicsHostArch.strip + "/makeBaseApp.pl"
+			connection = Net::SSH.start(v.hostname, v.user)
 			homeDir = connection.exec!("cd && pwd")
 			pwd = connection.exec!("mkdir -p #{tmpDir}; cd #{tmpDir}; pwd")
-			puts hostname + ": " + pwd.strip
+			puts v.hostname + ": " + pwd.strip
 			assert( homeDir.strip + "/" + tmpDir.strip == pwd.strip)
-
-			res = connection.exec!("cd #{tmpDir} && #{makeApp} -t example #{iocName} && #{makeApp} -i -t exmaple -p #{iocName}")
+			puts("cd #{tmpDir} && #{makeApp} -t example #{iocName} && #{makeApp} -p #{iocName}-i -t exmaple ")
+			res = connection.exec!("cd #{tmpDir} && #{makeApp} -t example #{iocName} && #{makeApp} -a #{v.epicsHostArch} -p #{iocName} -i -t example #{iocName}")
+			puts res
+			if v.epicsHostArch =~ /freebsd/ then makeCommand = 'gmake' else makeCommand = 'make' end
+			res = connection.exec!("cd #{tmpDir} && env EPICS_HOST_ARCH=#{v.epicsHostArch} #{makeCommand}")
 			puts res
 			ls = connection.exec!("ls #{tmpDir}")
 		end
@@ -91,5 +104,6 @@ mtc << EQUALTest.new(mtc)
 mtc << EQUALFailTest.new(mtc)
 #mtc << RemoteHostsTest.new(mtc)
 mtc << RemoteHostnameTest.new(mtc)
+mtc << RemoteHostnameTestNew.new(mtc)
 mtc << RemoteBuildExampleIOC.new(mtc)
 mtc.run
