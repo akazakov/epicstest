@@ -1,14 +1,78 @@
+# = test configuration file
+# good for reference
 :default: &default
   debug_level: 5
-
-:paths: &paths
+  user: tyoma
   topDir: /Users/tyoma/epics/soft-test
+  epicsTopDir: /Users/tyoma/epics/base-3.14.10
   binDir: bin
   referenceDir: reference
 
+# == :hosts:
+# should contain at least +localhost:+ definition, as long as others which you intend to use for your tests
+# typical config has +localhost host1 host2 host3+
+:hosts: &hosts
+  localhost:
+    hostname: tyomac
+    epicsHostArch: darwin-x86
+  host1:
+    epicsHostArch: freebsd-x86
+    hostname: burdock
+    epicsTopDir: /usr/home/tyoma/base-3.14.8.2
+    topDir: /usr/home/tyoma/soft-test
+  host2:
+    epicsHostArch: linux-x86
+    hostname: durian
+    epicsTopDir: /usr/users/control/epics/R3.14.9/base
+    topDir: /usr/users/tyoma/epics/soft-test
+  
+# So... the rigth way to configure all this stuff should be. 
+# 1. Default config < Host Config 
+# 2.
+# 
+# For example: Different hosts may have different location of base and other dirs. 
+# But, depending on the current test case we may need some other directory definitions... 
+# the question is were to put this data. 
+#
+# So now I think the configuration should consist from Hosts ( ips, architectures, default dirs etc...) 
+# and testcases - where some test-by-test needed variables are defined.... and redefined. 
+#
+# As for the commands.... 
+# the scenario is: we use two IOC and a few commands. so we want *easily* to switch from one host to another.... so how do we do this ?
+# so we need to create aliases and use them to configure our test... 
+# by default it would use some default hosts, but if we want we can change it. 
+# So insise the test case configuration we specify its asliases and hosts. 
+#  lets say we have [host1, hots2, hots3 ... hostN] 
+#  and then in the test config we specify server1 = host1, server2 = host2, station0 = hostM 
+#  and then we use it somehow like ioc1.start on server1 and ioc2.start on server2
+#  and if we need to change it then we just change the aliasing -> server1 = hostN etc. 
+# that's it. 
+# 
+# Old stuff.... reconsider
+# All testCases need to include this part !!!!!!!!!!!! 
+#
+#
+# testcase 
+# |---- hosts
+# |        |------host1: hostname, epicsHostArch ...
+# |        |------host2 ...
+# |        |------host3 ...
+# |
+# |-----IOC0
+# |      |-------"host1" 
+# |      |---- ....
+# |      
+# |-----IOC1 ...
+# ...
+# |-----COMMAND0 
+# |       |-------"host2"
+# |       ....
+# ...
+#
+#
+#
 :defaultIOC: &defaultIOC
-   <<: *paths
-   ioc: common
+  ioc: common
 
 :defaultIOCSSH: &defaultIOCSSH
    <<: *defaultIOC
@@ -17,24 +81,38 @@
    type: SSH
 
 :defaultCommand: &defaultCommand
-   <<: *paths
-   type: SH
+  type: SH
 
 :defaultCommandSSH: &defaultCommandSSH
-   <<: *paths
-   type: SSH
-   #host: burdock.linac.kek.jp
-   host: localhost
-   user: tyoma
+  type: SSH
+  host: localhost
+  user: tyoma
 
-MyTestCase: 
-   <<: *default
-   <<: *paths
+:testCases:
+  MyTestCase: 
+   ioc: exampleIOC
+   tmpDir: tmp/exioc
    IOC0:
-       <<: *defaultIOCSSH
-       bootDir: iocBoot/iocalarm
-       cmd: stcmd.host
-   COMMAND0:
-       <<: *defaultCommandSSH
+    <<: *defaultIOCSSH
+    bootDir: iocBoot/iocalarm
+    cmd: stcmd.host
+    host: host2
    COMMAND1:
-      <<: *defaultCommand
+     <<: *defaultCommandSSH
+   COMMAND0:
+     <<: *defaultCommand
+
+  TestCase2: 
+   <<: *includes
+   ioc: exampleIOC
+   varname: val
+   tmpDir: tmp/exioc
+   IOC0:
+    <<: *defaultIOCSSH
+    host: host1
+    bootDir: iocBoot/iocalarm
+    cmd: stcmd.host
+   COMMAND0:
+    host: host1 
+   COMMAND1:
+    host: host2

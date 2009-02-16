@@ -1,4 +1,4 @@
-require "EPICSTestUtils" 
+require "../EPICSTestUtils" 
 
 class AlarmTest < EPICSTestUtils::Test
 	@@title = "My Test"
@@ -15,7 +15,7 @@ class AlarmTest < EPICSTestUtils::Test
 		@values = ["2","4","10","16","18"]
 		@noalarmvalue = "10"
 		@channel = "mrkai"
-		reference = IO.read("#{@test_case.options.topDir}/#{@test_case.options.referenceDir}/alarmTest")
+		reference = IO.read("#{@test_case.opt.topDir}/#{@test_case.opt.referenceDir}/alarmTest")
 		result = ''
 		@acktvalues.each do |ackt|
 			result << cmd[0].exec("#{@caputackt} #{@channel} #{ackt}")
@@ -38,7 +38,7 @@ class AlarmTest < EPICSTestUtils::Test
 end
 class MyTestCase < EPICSTestUtils::TestCase
 end
-config = Cfg.load("newconf.yml")
+config = EPICSTestUtils::Cfg.load("newconf.yml")
 mtc = MyTestCase.new(EPICSTestUtils::TAPFormatter.new, config)
-mtc << AlarmTest.new(mtc)
+mtc << MyTest.new(mtc)
 mtc.run

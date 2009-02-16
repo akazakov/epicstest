@@ -17,7 +17,7 @@
 
 require 'rubygems'
 require 'net/ssh'
-require 'yaml'
+require 'cfg'
 # = EPICS TEST AUTOMATION UTILITIES
 #
 # * TestCase is a container for a test case. It should contain the tests which share same IOCs and Commands. 
@@ -72,7 +72,7 @@ module EPICSTestUtils
 	# 
 	class TestCase
 		include DebugPrint
-		attr_accessor :formatter, :ioc, :command
+		attr_accessor :formatter, :ioc, :command, :opt
 		attr_reader :options, :title
 		def initialize(formatter, options = {})
 			@formatter=formatter
@@ -80,8 +80,8 @@ module EPICSTestUtils
 			@ioc=[]
 			@command=[]
 			@title = self.class.name
-			@options = Cfg.find(options, @title)
-			@debug_level = Cfg.find(@options, 'debug_level')
+			@options = Cfg.c[@title]
+			@debug_level = @options['debug_level']
 		end
 
 		def << (test)
@@ -94,11 +94,11 @@ module EPICSTestUtils
 		def setup_iocs
 			IOC_NAMES.each do |cur| 
 				unless @options.has_key?(cur) then break end
-				options = @options[cur]
-				if options["type"].nil? || options["type"] == "SH"
-					@ioc << IOCLocal.new(options)
-				elsif options["type"] == "SSH"
-					@ioc << IOCSSH.new(options)
+				iocOptions = @options[cur]
+				if iocOptions["type"].nil? || iocOptions["type"] == "SH"
+					@ioc << IOCLocal.new(iocOptions)
+				elsif iocOptions["type"] == "SSH"
+					@ioc << IOCSSH.new(iocOptions)
 				else
 					raise "Unknown connection type"
 				end
@@ -109,10 +109,8 @@ module EPICSTestUtils
 		# Default configurator for commands
 		def setup_commands
 			COMMAND_NAMES.each do |cur| 
-				debug(@options,3)
 				unless @options.has_key?(cur) then break end
 				options = @options[cur]
-				debug("#{options}",3)
 				if options["type"].nil? || options["type"] == "SH"
 					@command << SH.new(options)
 				elsif options["type"] == "SSH"
@@ -142,16 +140,20 @@ module EPICSTestUtils
 		end
 
 		def run
-			setup
-			formatter.header(self)
-			@test.each do |test|
-				catch :assertion_failed do
-					test.run
+			begin 
+				setup
+				formatter.header(self)
+				@test.each do |test|
+					catch :assertion_failed do
+						test.run
+					end
+					formatter.report(test)
 				end
-				formatter.report(test)
-			end
-			formatter.footer(self)
-			teardown
+				formatter.footer(self)
+				teardown
+			rescue => ex
+				puts "#{ex.class} : #{ex.message}"
+			end 
 		end
 
 		def test_count
@@ -219,7 +221,7 @@ module EPICSTestUtils
 		def assert(val)
 			unless val 
 				@result = :NOT_OK
-				throw :assertion_failed 
+				raise "Assertion_failed"
 			else
 				@result = :OK
 			end
@@ -227,7 +229,7 @@ module EPICSTestUtils
 		def assert_equal(a,b)
 			unless a == b 
 				@result = :NOT_OK
-				throw :assertion_failed 
+				raise "Assertion_failed"
 			else
 				@result = :OK
 			end
@@ -298,11 +300,12 @@ module EPICSTestUtils
 
 	# Run command over ssh
 	class SSH
+		include DebugPrint
 		def initialize(options = {})
 			@connection = Net::SSH.start(options["host"], options["user"])
 		end
 		def exec(command)
-			@connection.exec!(command).to_s
+		  @connection.exec!(command).to_s
 		end
 		def close
 			@connection.close
@@ -321,116 +324,23 @@ module EPICSTestUtils
 	end
 
 	# 
-	# Config handling Stuff
-	#
-	module Cfg
-		class Config
-			attr_accessor :options
-			def initialize(options = {}, top = nil)
-				@options = options
-				@top = top
-			end
-
-			def find(name)
-				if @options[name].nil?
-					@top ? @top.find(name) : nil
-				else
-					@options[name]
-				end
-			end
-
-			def each(&block)
-				@options.each &block
-			end
-
-			def method_missing(method_id, *arg, &block)
-				val = self.find(method_id.to_s)
-				if val
-					val
-				else
-					super
-				end
-			end
-		end
-
-		@@default = nil
-		@@hosts_hash = {}
-		@@testCasesHash = {}
-		def Cfg.default
-			@@default
-		end
-		def Cfg.h
-			@@h
-		end
-		def Cfg.c
-			@@c
-		end
-		# Load YAML file which is a hash. Three main parts must be present: 
-		# - :default
-		# - :hosts
-		# - :testCases
-		#
-		# This method builds a config-tree
-		# :defaults <- host
-		# host <- testcase.ioc
-		# 
-		def Cfg.load(filename)
-			f = File.open(filename,"r")
-			config = YAML::load(f)
-			raise "Config file is empty or incorrect format!" unless config
-			if config[:default].nil? or config[:hosts].nil? then 
-				raise "Config file should contain :default and :hosts section (and optionally others))"
-			end
-			@@default = Config.new(config[:default])
-			config[:hosts].each_pair do |k,v|
-				v["alias"] = k
-				@@hosts_hash[k] = Config.new(v,@@default)
-			end
-			@@h = Config.new(@@hosts_hash)
-			config[:testCases].each_pair do |k,v|
-				caseConfigHash = Hash.new
-				v.each_pair do |key,val|
-					if (IOC_NAMES.member?(key) || COMMAND_NAMES.member?(key)) && val.class == Hash 
-						if val["host"] == '' then val["host"] = "localhost" end
-						iocHost = val["host"]
-						caseConfigHash[key] = Config.new(val,@@h.find(iocHost))
-					else 
-						caseConfigHash[key] = val
-					end
-				end
-				v["alias"] = k
-				@@testCasesHash[k] = Config.new(caseConfigHash,@@default)
-			end
-			@@c = Config.new(@@testCasesHash)
-			f.close
-			config
-		end
-
-		def Cfg.find(options,key)
-			if options[key].nil? 
-				raise "#{key} undefined!" 
-			end
-			options[key]
-		end
-	end
-
-	# 
 	# Class to wrap-up IOC run on local machine
 	#
 	class IOCLocal < IOC
 		DEFAULT_TIMEOUT = 2
 		def initialize(options={})
-			topDir = Cfg.find(options,"topDir")
-			binDir = Cfg.find(options,"binDir")
-			bootDir = Cfg.find(options,"bootDir")
-			hostArch = options["hostArch"].nil? ? EPICS_HOST_ARCH : options["hostArch"]
-			cmd = Cfg.find(options,"cmd")
-			ioc = Cfg.find(options,"ioc")
+			@options=options
+			topDir = options["topDir"]
+			binDir = options["binDir"]
+			bootDir = options["bootDir"]
+			hostArch = options["epicsHostArch"]
+			cmd = options["cmd"]
+			ioc = options["ioc"]
 			@localBinDir = "#{topDir}/#{binDir}"
 			@startdir = "#{topDir}/#{bootDir}"
 			@startcmd = "#{topDir}/#{binDir}/#{hostArch}/#{ioc} #{cmd}"
 			@buffer = ''
-			@timeout = options[:timeout].nil? ? DEFAULT_TIMEOUT : options[:timeout]
+			@timeout = options["timeout"].nil? ? DEFAULT_TIMEOUT : options["timeout"]
 		end
 		def start
 			savedir = Dir.pwd
@@ -486,28 +396,25 @@ module EPICSTestUtils
 		DEFAULT_TIMEOUT = 2
 		attr_accessor :buffer, :err_buffer
 		def initialize(options={})
-			hosts = options["hosts"]
-			debug(hosts,4)
-			remoteHostAlias = options["host"]
-			debug(remoteHostAlias,4)
-			remoteHostOptions = hosts[remoteHostAlias]
-			debug(remoteHostOptions,4)
-			remoteHostname = remoteHostOptions["hostname"]
-			remoteHostArch = remoteHostOptions["epicsHostArch"]
-			topDir = Cfg.find(options,"topDir")
-			binDir = Cfg.find(options,"binDir")
-			bootDir = Cfg.find(options,"bootDir")
-			hostArch = remoteHostArch
-			cmd = Cfg.find(options,"cmd")
-			ioc = Cfg.find(options,"ioc")
+			@options = options
+			@debug_level = options["debug_level"]
+			remoteHostname = options["hostname"]
+			remoteHostArch = options["epicsHostArch"]
+			topDir = options["topDir"]
+			binDir = options["binDir"]
+			bootDir = options["bootDir"]
+			hostArch = options["epicsHostArch"]
+			cmd = options["cmd"]
+			ioc = options["ioc"]
 			@localBinDir = "#{topDir}/#{binDir}"
 			@startdir = "#{topDir}/#{bootDir}"
 			@startcmd = "#{topDir}/#{binDir}/#{hostArch}/#{ioc} #{cmd}"
 			@buffer = ''
-			@timeout = options[:timeout].nil? ? DEFAULT_TIMEOUT : options[:timeout]
-			@session = Net::SSH.start(options["host"], options["user"])
+			@timeout = options["timeout"].nil? ? DEFAULT_TIMEOUT : options["timeout"]
+			@session = Net::SSH.start(remoteHostname, options["user"])
 			@buffer = ''
 			@err_buffer = ''
+			@done = false
 		end
 
 		def start
@@ -526,6 +433,7 @@ module EPICSTestUtils
 					end
 					ch.on_close do |ch|
 						debug("channel is closing!",2)
+						unless @done then raise "IOC exited unexpectedly" end
 					end
 				end
 			end
@@ -553,6 +461,7 @@ module EPICSTestUtils
 		end
 
 		def close
+			@doen = true
 			@session.close
 		end
 	end

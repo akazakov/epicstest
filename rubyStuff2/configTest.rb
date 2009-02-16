@@ -1,7 +1,6 @@
-require '../EPICSTestUtils'
-require "hashext"
+require 'EPICSTestUtils'
 
-Cfg.load("test.yml")
+Cfg.load("newconf.yml")
 Cfg.h.each_pair do |k,v| 
 	puts k + "=" + v.hostname
 end
@@ -21,3 +20,6 @@ puts Cfg.c.MyTestCase.IOC0.topDir
 puts Cfg.c.MyTestCase.IOC0.epicsTopDir
 puts Cfg.c.MyTestCase.IOC1.topDir
 puts Cfg.c.MyTestCase.IOC1.epicsTopDir
+puts Cfg.c.MyTestCase.IOC1.debug_level
+puts Cfg.c.MyTestCase.IOC1.hostname
+puts Cfg.c.MyTestCase.IOC0.topDir

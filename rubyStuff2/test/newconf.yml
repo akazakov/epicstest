@@ -3,8 +3,8 @@
 :default: &default
   debug_level: 5
   user: tyoma
+  topDir: /Users/tyoma/epics/soft-test
   epicsTopDir: /Users/tyoma/epics/base-3.14.10
-  defaultVar: defaultVal
 
 # == :hosts:
 # should contain at least +localhost:+ definition, as long as others which you intend to use for your tests
@@ -13,16 +13,16 @@
   localhost:
     hostname: tyomac
     epicsHostArch: darwin-x86
-    hostVar: hostVal1
   host1:
     epicsHostArch: freebsd-x86
     hostname: burdock
     epicsTopDir: /usr/home/tyoma/base-3.14.8.2
-    topDir: myDir
+    topDir: /usr/home/tyoma/soft-test
   host2:
     epicsHostArch: linux-x86
     hostname: durian
     epicsTopDir: /usr/users/control/epics/R3.14.9/base
+    topDir: /usr/users/tyoma/epics/soft-test
   
 # +topDir+ is used to start IOCs
 :paths: &paths
@@ -104,14 +104,13 @@
 :testCases:
   MyTestCase: 
    <<: *includes
+   ioc: exampleIOC
    tmpDir: tmp/exioc
    IOC0:
     <<: *defaultIOCSSH
     bootDir: iocBoot/iocalarm
     cmd: stcmd.host
-   IOC1:
-    host: host1
-    cmd: stcmd.host
+    host: host2
    COMMAND1:
      <<: *defaultCommandSSH
    COMMAND0:
