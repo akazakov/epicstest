@@ -114,7 +114,7 @@ module EPICSTestUtils
 				if options["type"].nil? || options["type"] == "SH"
 					@command << SH.new(options)
 				elsif options["type"] == "SSH"
-					@command << SSH.new(options)
+					@command << SSHCommand.new(options)
 				else
 					raise "Unknown connection type"
 				end
@@ -246,108 +246,31 @@ module EPICSTestUtils
 
 	end
 
-	# This is a template class
-	# IOC and SimpleCommand derive from it
+	# This is a template class for PIPED external program
+	# output is buffered
+	# IOC and Command derive from it as well ass SSHCommand and IOCSSH
 	class ExternalCommand
-		attr_accessor :connector
-		def initialize(connector)
-			@connector = connector
-		end
-		def start
-			@connector.connect
-		end
-		def stop
-			@connector.disconnect
-		end
-		def read
-			@connector.read
-		end
-		def write(message)
-			@connector.write(message)
-		end
-		def read_line
-			@connector.read_line
-		end
-	end
-
-	# Template to represent different types of connections:
-	class Connector
-		def connect
-		end
-
-		def disconnect
-		end
-
-		def read
-		end
-
-		def write(message)
-		end
-
-		def readlines
-		end
-	end
-
-	# Run command in shell
-	class SH 
 		include DebugPrint
-		def initialize(options = {})
-		end
-		def exec(command)
-			`#{command}`
-		end
-	end
-
-	# Run command over ssh
-	class SSH
-		include DebugPrint
-		def initialize(options = {})
-			@connection = Net::SSH.start(options["host"], options["user"])
-		end
-		def exec(command)
-		  @connection.exec!(command).to_s
-		end
-		def close
-			@connection.close
-		end
-	end
-
-	class IOC
-		def start
-		end
-		def stop
-		end
-		def read
-		end
-		def command
-		end
-	end
-
-	# 
-	# Class to wrap-up IOC run on local machine
-	#
-	class IOCLocal < IOC
 		DEFAULT_TIMEOUT = 2
-		def initialize(options={})
-			@options=options
+		attr_accessor :localBinDir,:cmd, :startcmd
+		def initialize(options = {})
 			topDir = options["topDir"]
 			binDir = options["binDir"]
-			bootDir = options["bootDir"]
 			hostArch = options["epicsHostArch"]
-			cmd = options["cmd"]
-			ioc = options["ioc"]
 			@localBinDir = "#{topDir}/#{binDir}"
-			@startdir = "#{topDir}/#{bootDir}"
-			@startcmd = "#{topDir}/#{binDir}/#{hostArch}/#{ioc} #{cmd}"
-			@buffer = ''
+			@cmd = options["cmd"]
+			@startcmd = "#{localBinDir}/#{cmd}"
+			@startdir = topDir
 			@timeout = options["timeout"].nil? ? DEFAULT_TIMEOUT : options["timeout"]
+			@done = false
+			@buffer = ''
 		end
 		def start
 			savedir = Dir.pwd
 			Dir.chdir(@startdir)
 			@pipe = IO.popen(@startcmd,"r+")
 			Dir.chdir(savedir)
-			sleep(5)
+			#	sleep(5)
 			read_loop
 		end
 		def read
@@ -389,17 +312,33 @@ module EPICSTestUtils
 			end
 		end
 
+    def exit
+      Process.kill("TERM", @pipe.pid)
+      @pipe.close
+    end
+
+    def kill
+      Process.kill("KILL",@pipe.pid)
+      @pipe.close
+    end
 	end
 
-	class IOCSSH < IOC
-		include DebugPrint
+	#Run command in shell on localhost
+	class SH < ExternalCommand
+		def exec(command)
+			@done = false
+			`#{command}`
+			@done = true
+		end
+	end
+
+	# 
+	# Class to wrap-up IOC run on local machine
+	#
+	class IOCLocal < ExternalCommand
 		DEFAULT_TIMEOUT = 2
-		attr_accessor :buffer, :err_buffer
 		def initialize(options={})
-			@options = options
-			@debug_level = options["debug_level"]
-			remoteHostname = options["hostname"]
-			remoteHostArch = options["epicsHostArch"]
+			@options=options
 			topDir = options["topDir"]
 			binDir = options["binDir"]
 			bootDir = options["bootDir"]
@@ -411,7 +350,33 @@ module EPICSTestUtils
 			@startcmd = "#{topDir}/#{binDir}/#{hostArch}/#{ioc} #{cmd}"
 			@buffer = ''
 			@timeout = options["timeout"].nil? ? DEFAULT_TIMEOUT : options["timeout"]
-			@session = Net::SSH.start(remoteHostname, options["user"])
+		end
+		def start
+			savedir = Dir.pwd
+			Dir.chdir(@startdir)
+			@pipe = IO.popen(@startcmd,"r+")
+			Dir.chdir(savedir)
+			sleep(5)
+			read_loop
+		end
+	end
+
+	class SSHCommand <  ExternalCommand
+		include DebugPrint
+		DEFAULT_TIMEOUT = 2
+		attr_accessor :buffer, :err_buffer, :done
+		def initialize(options={})
+			topDir = options["topDir"]
+			binDir = options["binDir"]
+			hostArch = options["epicsHostArch"]
+			@localBinDir = "#{topDir}/#{binDir}"
+			@done = false
+			@debug_level = options["debug_level"]
+			cmd = options["cmd"]
+			@startdir = topDir
+			@startcmd = "#{topDir}/#{binDir}/#{cmd}"
+			@timeout = options["timeout"].nil? ? DEFAULT_TIMEOUT : options["timeout"]
+			@session = Net::SSH.start(options["hostname"], options["user"])
 			@buffer = ''
 			@err_buffer = ''
 			@done = false
@@ -433,19 +398,11 @@ module EPICSTestUtils
 					end
 					ch.on_close do |ch|
 						debug("channel is closing!",2)
-						unless @done then raise "IOC exited unexpectedly" end
+					#	unless @done then raise "Command exited unexpectedly" end
 					end
 				end
 			end
 			read_loop(5)
-		end
-
-		def start_timer
-			@start_time = Time.now
-		end
-
-		def timeout?(val = @timeout)
-			(Time.now - @start_time) > val
 		end
 
 		def read_loop(timeout = @timeout)
@@ -458,11 +415,42 @@ module EPICSTestUtils
 		end
 
 		def exec(command)
+		  @session.exec!(command).to_s
 		end
-
+		
+		alias exit close
+		alias kill close
+		
 		def close
-			@doen = true
+			@done = true
 			@session.close
+		end
+	end
+
+	class IOCSSH < SSHCommand
+		include DebugPrint
+		DEFAULT_TIMEOUT = 2
+		attr_accessor :buffer, :err_buffer, :done
+		def initialize(options={})
+			@options = options
+			@debug_level = options["debug_level"]
+			remoteHostname = options["hostname"]
+			remoteHostArch = options["epicsHostArch"]
+			topDir = options["topDir"]
+			binDir = options["binDir"]
+			bootDir = options["bootDir"]
+			hostArch = options["epicsHostArch"]
+			cmd = options["cmd"]
+			ioc = options["ioc"]
+			@localBinDir = "#{topDir}/#{binDir}"
+			@startdir = "#{topDir}/#{bootDir}"
+			@startcmd = "#{topDir}/#{binDir}/#{hostArch}/#{ioc} #{cmd}"
+			@buffer = ''
+			@timeout = options["timeout"].nil? ? DEFAULT_TIMEOUT : options["timeout"]
+			@session = Net::SSH.start(remoteHostname, options["user"])
+			@buffer = ''
+			@err_buffer = ''
+			@done = false
 		end
 	end
 end
