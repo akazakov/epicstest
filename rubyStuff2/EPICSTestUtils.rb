@@ -44,413 +44,421 @@ module EPICSTestUtils
 	end
 =end
 
-	module DebugPrint
-		attr_accessor :debug_level
-		def debug(msg, esc, adr='')
-			unless @debug_level.nil? then 
-				if @debug_level >= esc then 
-					STDERR.puts "<=:DEBUG[" + this_method + "|"  + adr + "]:  "+ msg.to_s + "   :=>"
-				end
+module DebugPrint
+	attr_accessor :debug_level
+	def debug(msg, esc, adr='')
+		unless @debug_level.nil? then 
+			if @debug_level >= esc then 
+				STDERR.puts "<=:DEBUG[" + this_method + "|"  + adr + "]:  "+ msg.to_s + "   :=>"
 			end
 		end
+	end
 
-		def this_method
-			caller[1][/`([^']*)'/, 1]
+	def this_method
+		caller[1][/`([^']*)'/, 1]
+	end
+end
+
+#
+# This Class is a container for a test case.
+# When initialize it requires a formatter object - the output formatter. 
+#
+# Important vars:
+# * @ioc - ioc array used in tests
+# * @command - commands array used in tests
+# * @test - test array 
+#
+# to add tests you can use '<<' operator 
+# 
+class TestCase
+	include DebugPrint
+	attr_accessor :formatter, :ioc, :command, :opt
+	attr_reader :options, :title
+	def initialize(formatter, options = {})
+		@formatter=formatter
+		@test=[]
+		@ioc=[]
+		@command=[]
+		@title = self.class.name
+		@options = Cfg.c[@title]
+		@debug_level = @options['debug_level']
+	end
+
+	def << (test)
+		@test << test
+	end
+
+	#
+	# Deafult configurator for IOCs
+	#
+	def setup_iocs
+		IOC_NAMES.each do |cur| 
+			unless @options.has_key?(cur) then break end
+			iocOptions = @options[cur]
+			if iocOptions["type"].nil? || iocOptions["type"] == "SH"
+				@ioc << IOCLocal.new(iocOptions)
+			elsif iocOptions["type"] == "SSH"
+				@ioc << IOCSSH.new(iocOptions)
+			else
+				raise "Unknown connection type"
+			end
 		end
 	end
 
 	#
-	# This Class is a container for a test case.
-	# When initialize it requires a formatter object - the output formatter. 
-	#
-	# Important vars:
-	# * @ioc - ioc array used in tests
-	# * @command - commands array used in tests
-	# * @test - test array 
-	#
-	# to add tests you can use '<<' operator 
-	# 
-	class TestCase
-		include DebugPrint
-		attr_accessor :formatter, :ioc, :command, :opt
-		attr_reader :options, :title
-		def initialize(formatter, options = {})
-			@formatter=formatter
-			@test=[]
-			@ioc=[]
-			@command=[]
-			@title = self.class.name
-			@options = Cfg.c[@title]
-			@debug_level = @options['debug_level']
-		end
-
-		def << (test)
-			@test << test
-		end
-
-		#
-		# Deafult configurator for IOCs
-		#
-		def setup_iocs
-			IOC_NAMES.each do |cur| 
-				unless @options.has_key?(cur) then break end
-				iocOptions = @options[cur]
-				if iocOptions["type"].nil? || iocOptions["type"] == "SH"
-					@ioc << IOCLocal.new(iocOptions)
-				elsif iocOptions["type"] == "SSH"
-					@ioc << IOCSSH.new(iocOptions)
-				else
-					raise "Unknown connection type"
-				end
+	# Default configurator for commands
+	def setup_commands
+		COMMAND_NAMES.each do |cur| 
+			unless @options.has_key?(cur) then break end
+			options = @options[cur]
+			if options["type"].nil? || options["type"] == "SH"
+				@command << SH.new(options)
+			elsif options["type"] == "SSH"
+				@command << SSHCommand.new(options)
+			else
+				raise "Unknown connection type"
 			end
 		end
+	end
 
-		#
-		# Default configurator for commands
-		def setup_commands
-			COMMAND_NAMES.each do |cur| 
-				unless @options.has_key?(cur) then break end
-				options = @options[cur]
-				if options["type"].nil? || options["type"] == "SH"
-					@command << SH.new(options)
-				elsif options["type"] == "SSH"
-					@command << SSHCommand.new(options)
-				else
-					raise "Unknown connection type"
+	def start_iocs
+		@ioc.each { |ioc| ioc.start }
+	end
+
+	def stop_iocs
+		@ioc.each { |ioc| ioc.exit }
+	end
+
+	def setup
+		setup_iocs
+		setup_commands
+		start_iocs
+	end
+
+	def stop_commands
+		@command.each { |x| x.exit } 
+	end
+
+	def teardown
+		stop_iocs
+		stop_commands
+	end
+
+	def run
+		begin 
+			setup
+			formatter.header(self)
+			@test.each do |test|
+				catch :assertion_failed do
+					test.run
 				end
+				formatter.report(test)
 			end
-		end
+			formatter.footer(self)
+			teardown
+		rescue => ex
+			puts  ex
+			puts ex.backtrace
+		end 
+	end
 
-		def start_iocs
-			@ioc.each { |ioc| ioc.start }
-		end
+	def test_count
+		@test.size
+	end
+end # TestCase
+# This class is a template for different output formats:
+# Particular formatters should derive from here
+# TAP, HTML, TEXT etc. 
+class Formatter
+	def header(context)
+		puts context.title
+	end
 
-		def stop_iocs
-			@ioc.each { |ioc| ioc.stop }
-		end
+	def report(context)
+		puts context.result
+	end
 
-		def setup
-			setup_iocs
-			setup_commands
-			start_iocs
-		end
+	def put(string)
+		puts string
+	end
 
-		def teardown
-			stop_iocs
-		end
+	def footer(context)
+		puts(context.title, "is over")
+	end
+end
 
-		def run
+class TAPFormatter < Formatter
+	def header(context)
+		puts "# #{context.title} starting"
+		puts "1..#{context.test_count}"
+	end
+	def report(context)
+		if context.result == :OK then puts "ok - #{context.title} #{context.description} # #{context.explanation}" 
+		else puts "not_ok - #{context.title} #{context.description} # #{context.result} #{context.explanation}"
+		end
+	end
+	def put(string)
+		puts "# #{string}"
+	end
+	def footer(context)
+		puts "# #{context.title} is over"
+	end
+end
+
+# Template Class for user tests
+# All produced output should go to fromatter.test_output
+# Real Test Implementation should redefine the test routine.
+#
+class Test
+	attr_accessor :formatter
+	attr_reader	:title, :description, :explanation
+	def initialize(test_case)
+		@title = self.class.name
+		@description = ""
+		@explanation = ""
+		@formatter = test_case.formatter
+		@test_case = test_case
+		@result = :TODO
+	end
+	def run
+		@formatter.put("Run:Nothing here")
+	end
+	def assert(val)
+		unless val 
+			@result = :NOT_OK
+			raise "Assertion_failed"
+		else
+			@result = :OK
+		end
+	end
+	def assert_equal(a,b)
+		unless a == b 
+			@result = :NOT_OK
+			raise "Assertion_failed"
+		else
+			@result = :OK
+		end
+	end
+	def result
+		@result
+	end
+	def ioc
+		@test_case.ioc
+	end
+	def cmd
+		@test_case.command
+	end
+end
+
+# This is a template class for PIPED external program
+# output is buffered
+# IOC and Command derive from it as well ass SSHCommand and IOCSSH
+class ExternalCommand
+	include DebugPrint
+	DEFAULT_TIMEOUT = 2
+	attr_accessor :localBinDir,:cmd, :startcmd
+	def initialize(options = {})
+		topDir = options["topDir"]
+		binDir = options["binDir"]
+		hostArch = options["epicsHostArch"]
+		@localBinDir = "#{topDir}/#{binDir}"
+		@cmd = options["cmd"]
+		@startcmd = "#{localBinDir}/#{cmd}"
+		@startdir = topDir
+		@timeout = options["timeout"].nil? ? DEFAULT_TIMEOUT : options["timeout"]
+		@done = false
+		@buffer = ''
+	end
+	def start
+		savedir = Dir.pwd
+		Dir.chdir(@startdir)
+		@pipe = IO.popen(@startcmd,"r+")
+		Dir.chdir(savedir)
+		#	sleep(5)
+		read_loop
+	end
+	def read
+		read_loop
+		buf = @buffer
+		@buffer = ''
+		buf
+	end
+	def command(msg)
+		@pipe.puts msg
+	end
+	def start_timer
+		@start_time = Time.now
+	end
+	def timeout?(val = @timeout)
+		(Time.now - @start_time) > val
+	end
+
+	def read_loop(timeout = @timeout)
+		start_timer
+		loop do
+			empty = true
 			begin 
-				setup
-				formatter.header(self)
-				@test.each do |test|
-					catch :assertion_failed do
-						test.run
-					end
-					formatter.report(test)
-				end
-				formatter.footer(self)
-				teardown
-			rescue => ex
-				puts "#{ex.class} : #{ex.message}"
-			end 
-		end
-
-		def test_count
-			@test.size
-		end
-	end # TestCase
-
-	# This class is a template for different output formats:
-	# Particular formatters should derive from here
-	# TAP, HTML, TEXT etc. 
-	class Formatter
-		def header(context)
-			puts context.title
-		end
-
-		def report(context)
-			puts context.result
-		end
-
-		def put(string)
-			puts string
-		end
-
-		def footer(context)
-			puts(context.title, "is over")
-		end
-	end
-
-	class TAPFormatter < Formatter
-		def header(context)
-			puts "# #{context.title} starting"
-			puts "1..#{context.test_count}"
-		end
-		def report(context)
-			if context.result == :OK then puts "ok - #{context.title} #{context.description} # #{context.explanation}" 
-			else puts "not_ok - #{context.title} #{context.description} # #{context.result} #{context.explanation}"
-			end
-		end
-		def put(string)
-			puts "# #{string}"
-		end
-		def footer(context)
-			puts "# #{context.title} is over"
-		end
-	end
-
-	# Template Class for user tests
-	# All produced output should go to fromatter.test_output
-	# Real Test Implementation should redefine the test routine.
-	#
-	class Test
-		attr_accessor :formatter
-		attr_reader	:title, :description, :explanation
-		def initialize(test_case)
-			@title = self.class.name
-			@description = ""
-			@explanation = ""
-			@formatter = test_case.formatter
-			@test_case = test_case
-			@result = :TODO
-		end
-		def run
-			@formatter.put("Run:Nothing here")
-		end
-		def assert(val)
-			unless val 
-				@result = :NOT_OK
-				raise "Assertion_failed"
-			else
-				@result = :OK
-			end
-		end
-		def assert_equal(a,b)
-			unless a == b 
-				@result = :NOT_OK
-				raise "Assertion_failed"
-			else
-				@result = :OK
-			end
-		end
-		def result
-			@result
-		end
-		def ioc
-			@test_case.ioc
-		end
-		def cmd
-			@test_case.command
-		end
-
-	end
-
-	# This is a template class for PIPED external program
-	# output is buffered
-	# IOC and Command derive from it as well ass SSHCommand and IOCSSH
-	class ExternalCommand
-		include DebugPrint
-		DEFAULT_TIMEOUT = 2
-		attr_accessor :localBinDir,:cmd, :startcmd
-		def initialize(options = {})
-			topDir = options["topDir"]
-			binDir = options["binDir"]
-			hostArch = options["epicsHostArch"]
-			@localBinDir = "#{topDir}/#{binDir}"
-			@cmd = options["cmd"]
-			@startcmd = "#{localBinDir}/#{cmd}"
-			@startdir = topDir
-			@timeout = options["timeout"].nil? ? DEFAULT_TIMEOUT : options["timeout"]
-			@done = false
-			@buffer = ''
-		end
-		def start
-			savedir = Dir.pwd
-			Dir.chdir(@startdir)
-			@pipe = IO.popen(@startcmd,"r+")
-			Dir.chdir(savedir)
-			#	sleep(5)
-			read_loop
-		end
-		def read
-			read_loop
-			buf = @buffer
-			@buffer = ''
-			buf
-		end
-		def command(msg)
-			@pipe.puts msg
-		end
-		def start_timer
-			@start_time = Time.now
-		end
-		def timeout?(val = @timeout)
-			(Time.now - @start_time) > val
-		end
-
-		def read_loop(timeout = @timeout)
-			start_timer
-			loop do
-				empty = true
-				begin 
-					@buffer << @pipe.read_nonblock(1024)
-					empty = false
-				rescue Errno::EAGAIN
-					if empty 
-						if timeout?(timeout) then break 
-						else
-							sleep(timeout/3)
-							next
-						end
+				@buffer << @pipe.read_nonblock(1024)
+				empty = false
+			rescue Errno::EAGAIN
+				if empty 
+					if timeout?(timeout) then break 
 					else
-						#reset timer and continue
-						start_timer
+						sleep(timeout/3)
 						next
 					end
+				else
+					#reset timer and continue
+					start_timer
+					next
 				end
 			end
 		end
-
-    def exit
-      Process.kill("TERM", @pipe.pid)
-      @pipe.close
-    end
-
-    def kill
-      Process.kill("KILL",@pipe.pid)
-      @pipe.close
-    end
 	end
 
-	#Run command in shell on localhost
-	class SH < ExternalCommand
-		def exec(command)
-			@done = false
-			`#{command}`
-			@done = true
+	def exit
+		if @pipe then 
+			Process.kill("TERM", @pipe.pid)
+			@pipe.close
 		end
 	end
 
-	# 
-	# Class to wrap-up IOC run on local machine
-	#
-	class IOCLocal < ExternalCommand
-		DEFAULT_TIMEOUT = 2
-		def initialize(options={})
-			@options=options
-			topDir = options["topDir"]
-			binDir = options["binDir"]
-			bootDir = options["bootDir"]
-			hostArch = options["epicsHostArch"]
-			cmd = options["cmd"]
-			ioc = options["ioc"]
-			@localBinDir = "#{topDir}/#{binDir}"
-			@startdir = "#{topDir}/#{bootDir}"
-			@startcmd = "#{topDir}/#{binDir}/#{hostArch}/#{ioc} #{cmd}"
-			@buffer = ''
-			@timeout = options["timeout"].nil? ? DEFAULT_TIMEOUT : options["timeout"]
-		end
-		def start
-			savedir = Dir.pwd
-			Dir.chdir(@startdir)
-			@pipe = IO.popen(@startcmd,"r+")
-			Dir.chdir(savedir)
-			sleep(5)
-			read_loop
-		end
-	end
-
-	class SSHCommand <  ExternalCommand
-		include DebugPrint
-		DEFAULT_TIMEOUT = 2
-		attr_accessor :buffer, :err_buffer, :done
-		def initialize(options={})
-			topDir = options["topDir"]
-			binDir = options["binDir"]
-			hostArch = options["epicsHostArch"]
-			@localBinDir = "#{topDir}/#{binDir}"
-			@done = false
-			@debug_level = options["debug_level"]
-			cmd = options["cmd"]
-			@startdir = topDir
-			@startcmd = "#{topDir}/#{binDir}/#{cmd}"
-			@timeout = options["timeout"].nil? ? DEFAULT_TIMEOUT : options["timeout"]
-			@session = Net::SSH.start(options["hostname"], options["user"])
-			@buffer = ''
-			@err_buffer = ''
-			@done = false
-		end
-
-		def start
-			ssh = @session
-			@channel = ssh.open_channel do |ch| 
-				ch.exec "cd #{@startdir} && #{@startcmd}" do |ch, success| 
-					abort "could not execute command" unless success
-					ch.on_data do |chn, data|
-						debug("got stdout: #{data}", 2)
-						#ch.send_data "something for stdin\n"
-						@buffer << data
-					end
-					ch.on_extended_data do |chn, type, data|
-						debug("got stderr: #{data}", 2)
-						@err_buffer << data
-					end
-					ch.on_close do |ch|
-						debug("channel is closing!",2)
-					#	unless @done then raise "Command exited unexpectedly" end
-					end
-				end
-			end
-			read_loop(5)
-		end
-
-		def read_loop(timeout = @timeout)
-			start_timer
-			@session.loop(timeout) { not timeout?(timeout) }
-		end
-
-		def command(cmd)
-			@channel.send_data(cmd)
-		end
-
-		def exec(command)
-		  @session.exec!(command).to_s
-		end
-		
-		alias exit close
-		alias kill close
-		
-		def close
-			@done = true
-			@session.close
-		end
-	end
-
-	class IOCSSH < SSHCommand
-		include DebugPrint
-		DEFAULT_TIMEOUT = 2
-		attr_accessor :buffer, :err_buffer, :done
-		def initialize(options={})
-			@options = options
-			@debug_level = options["debug_level"]
-			remoteHostname = options["hostname"]
-			remoteHostArch = options["epicsHostArch"]
-			topDir = options["topDir"]
-			binDir = options["binDir"]
-			bootDir = options["bootDir"]
-			hostArch = options["epicsHostArch"]
-			cmd = options["cmd"]
-			ioc = options["ioc"]
-			@localBinDir = "#{topDir}/#{binDir}"
-			@startdir = "#{topDir}/#{bootDir}"
-			@startcmd = "#{topDir}/#{binDir}/#{hostArch}/#{ioc} #{cmd}"
-			@buffer = ''
-			@timeout = options["timeout"].nil? ? DEFAULT_TIMEOUT : options["timeout"]
-			@session = Net::SSH.start(remoteHostname, options["user"])
-			@buffer = ''
-			@err_buffer = ''
-			@done = false
+	def kill
+		if @pipe then 
+			Process.kill("KILL",@pipe.pid)
+			@pipe.close
 		end
 	end
 end
+
+#Run command in shell on localhost
+class SH < ExternalCommand
+	def exec(command)
+		@done = false
+		result = `#{command}`
+		@done = true
+		result
+	end
+end
+
+# 
+# Class to wrap-up IOC run on local machine
+#
+class IOCLocal < ExternalCommand
+	DEFAULT_TIMEOUT = 2
+	def initialize(options={})
+		@options=options
+		topDir = options["topDir"]
+		binDir = options["binDir"]
+		bootDir = options["bootDir"]
+		hostArch = options["epicsHostArch"]
+		cmd = options["cmd"]
+		ioc = options["ioc"]
+		@localBinDir = "#{topDir}/#{binDir}"
+		@startdir = "#{topDir}/#{bootDir}"
+		@startcmd = "#{topDir}/#{binDir}/#{hostArch}/#{ioc} #{cmd}"
+		@buffer = ''
+		@timeout = options["timeout"].nil? ? DEFAULT_TIMEOUT : options["timeout"]
+	end
+	def start
+		savedir = Dir.pwd
+		Dir.chdir(@startdir)
+		@pipe = IO.popen(@startcmd,"r+")
+		Dir.chdir(savedir)
+		sleep(5)
+		read_loop
+	end
+end
+
+class SSHCommand <  ExternalCommand
+	include DebugPrint
+	DEFAULT_TIMEOUT = 2
+	attr_accessor :buffer, :err_buffer, :done
+	def initialize(options={})
+		topDir = options["topDir"]
+		binDir = options["binDir"]
+		hostArch = options["epicsHostArch"]
+		@localBinDir = "#{topDir}/#{binDir}"
+		@done = false
+		@debug_level = options["debug_level"]
+		cmd = options["cmd"]
+		@startdir = topDir
+		@startcmd = "#{topDir}/#{binDir}/#{cmd}"
+		@timeout = options["timeout"].nil? ? DEFAULT_TIMEOUT : options["timeout"]
+		@session = Net::SSH.start(options["hostname"], options["user"])
+		@buffer = ''
+		@err_buffer = ''
+		@done = false
+	end
+
+	def start
+		ssh = @session
+		@channel = ssh.open_channel do |ch| 
+			ch.exec "cd #{@startdir} && #{@startcmd}" do |ch, success| 
+				abort "could not execute command" unless success
+				ch.on_data do |chn, data|
+					debug("got stdout: #{data}", 2)
+					#ch.send_data "something for stdin\n"
+					@buffer << data
+				end
+				ch.on_extended_data do |chn, type, data|
+					debug("got stderr: #{data}", 2)
+					@err_buffer << data
+				end
+				ch.on_close do |ch|
+					debug("channel is closing!",2)
+					#	unless @done then raise "Command exited unexpectedly" end
+				end
+			end
+		end
+		read_loop(5)
+	end
+
+	def read_loop(timeout = @timeout)
+		start_timer
+		@session.loop(timeout) { not timeout?(timeout) }
+	end
+
+	def command(cmd)
+		@channel.send_data(cmd)
+	end
+
+	def exec(command)
+		@session.exec!(command).to_s
+	end
+	def close
+		@done = true
+		@session.close
+	end
+	alias exit close
+	alias kill close
+end
+
+class IOCSSH < SSHCommand
+	include DebugPrint
+	DEFAULT_TIMEOUT = 2
+	attr_accessor :buffer, :err_buffer, :done
+	def initialize(options={})
+		@options = options
+		@debug_level = options["debug_level"]
+		remoteHostname = options["hostname"]
+		remoteHostArch = options["epicsHostArch"]
+		topDir = options["topDir"]
+		binDir = options["binDir"]
+		bootDir = options["bootDir"]
+		hostArch = options["epicsHostArch"]
+		cmd = options["cmd"]
+		ioc = options["ioc"]
+		@localBinDir = "#{topDir}/#{binDir}"
+		@startdir = "#{topDir}/#{bootDir}"
+		@startcmd = "#{topDir}/#{binDir}/#{hostArch}/#{ioc} #{cmd}"
+		@buffer = ''
+		@timeout = options["timeout"].nil? ? DEFAULT_TIMEOUT : options["timeout"]
+		@session = Net::SSH.start(remoteHostname, options["user"])
+		@buffer = ''
+		@err_buffer = ''
+		@done = false
+	end
+end
+end
+
