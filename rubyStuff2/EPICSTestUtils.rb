@@ -1,9 +1,11 @@
 # = EPICS TEST 
 # Requirements to use: 
-# 1. Install  EPICS and all the required libraries on ALL target computers intended for testing
+# 1. Install  EPICS and all the required libraries on ALL target
+# computers intended for testing
 # 2. Install test packag on all computers 
 # 3. Make sure that PATH variable conatins epics/bin and test/bin directories. IMPORTANT! 
-# you may need to edit your shell startup scripst or  *~/.ssh/environment* file and make sure that /etc/sshd_conf has +PermitUserEnvironment+ set to +yes+
+# you may need to edit your shell startup scripst or  *~/.ssh/environment* 
+# file and make sure that /etc/sshd_conf has +PermitUserEnvironment+ set to +yes+
 #
 # Hopefully this is all you need to do to use this package.
 # Edit config.yml fle to reflect your settings
@@ -14,6 +16,38 @@
 # For implementing your own test scenario please refer to the existing files
 #
 # 
+# TODO list -> 
+# 1.  Do something with variables visibility from TestCase to Test 
+# maybe delete Test class and implement test functions again....
+# currently it seems there is not point having separate Test class... 
+# but.... I may run the Test.run in the TestCase scope as well
+# and of course I can have both !!! 
+#
+# OK I remebered.... I implemented Test case in order to hide the printing and other stuff 
+# to make pluggable Formatter. Insted I can require using provided Formatter API to print. 
+# Or --> run threaded ..
+#
+# 2. make command.start configurable and automatic. 
+#
+# 3. reimplement setup/teardown for all tests and each 
+#			make named setup/teardown ??? 
+#
+#
+#	4. check the startup/cleanup procedures 
+#		try to close IOC and commands gracefully. Of course they suppose to
+#		exit by themselves when my script exits. Because they'll get broken-pipe
+#		but... it's better to be on the safe side and do it myself. 
+#	
+#
+# 5. Multithreading ??? to check the health of the components continiously 
+#
+# 6. also have to separate "life-cycles" of independent TestCases 
+# one test case may "Bail Out" but what is left has to be executed. 
+#
+#
+# 
+#
+#
 
 require 'rubygems'
 require 'net/ssh'
@@ -44,6 +78,18 @@ module EPICSTestUtils
 	end
 =end
 
+#assrtion methods throw :assertion_failure in case of "false" 
+#and the value returned is set to :NOT_OK
+#otherwise they return :OK
+def assert(val)
+	throw :assertion_failure, :NOT_OK unless val 
+	:OK
+end
+def assert_equal(a,b)
+	throw :assertion_failure, :NOT_OK unless a == b 
+	:OK
+end
+
 module DebugPrint
 	attr_accessor :debug_level
 	def debug(msg, esc, adr='')
@@ -66,7 +112,7 @@ end
 # Important vars:
 # * @ioc - ioc array used in tests
 # * @command - commands array used in tests
-# * @test - test array 
+# * @object_test - array of Test class objects <- not adviced to use anymore
 #
 # to add tests you can use '<<' operator 
 # 
@@ -76,7 +122,7 @@ class TestCase
 	attr_reader :options, :title
 	def initialize(formatter, options = {})
 		@formatter=formatter
-		@test=[]
+		@object_tests=[]
 		@ioc=[]
 		@command=[]
 		@title = self.class.name
@@ -85,7 +131,15 @@ class TestCase
 	end
 
 	def << (test)
-		@test << test
+		@object_tests << test
+	end
+
+	def find_tests
+			self.methods.delete_if { |meth| meth !~ /^test/ }
+	end
+
+	def cmd
+		@command
 	end
 
 	#
@@ -105,7 +159,6 @@ class TestCase
 		end
 	end
 
-	#
 	# Default configurator for commands
 	def setup_commands
 		COMMAND_NAMES.each do |cur| 
@@ -121,6 +174,15 @@ class TestCase
 		end
 	end
 
+	def start_commands
+		#@command.each {|x| x.start}
+	end
+
+	def stop_commands
+		@command.each { |x| x.exit } 
+	end
+
+
 	def start_iocs
 		@ioc.each { |ioc| ioc.start }
 	end
@@ -128,42 +190,96 @@ class TestCase
 	def stop_iocs
 		@ioc.each { |ioc| ioc.exit }
 	end
+	
+	# Placeholder for user defined setup function
+	# which is called before each test
+	# it is called after ioc and commands are initialized, but 
+	# before the iocs are started. 
+	def setup 
+	end
 
-	def setup
+	# Placeholder for user defined setup function
+	# which is called after ioc and commands are initialized, but 
+	# before the iocs are started. 
+	def global_setup
+	end
+
+	# Placeholder for user defined teardown function
+	# which is called after each test
+	def teardown
+	end
+
+	# Placeholder for user define global_teardown function 
+	# which is called after all tests are completed
+	# but before iocs and commands are stoped/killed
+	def global_teardown
+	end
+
+	# This function is called before everything else
+	# User should redefine setup function if needed
+	# it configures iocs, commands, runs user setup func 
+	# and start iocs
+	# for commands start is not called
+	def case_setup
 		setup_iocs
 		setup_commands
+		global_setup
 		start_iocs
+		start_commands
 	end
 
-	def stop_commands
-		@command.each { |x| x.exit } 
-	end
 
-	def teardown
+	def case_teardown
+		global_teardown
 		stop_iocs
 		stop_commands
 	end
 
+	# It calles all the methods defined inside TestCase that 
+	# start with 'test' 
+	# and returns results as a hash, "meth_name => result" 
+	def run_method_tests
+		results_hash = {}
+		i = 1
+		find_tests.sort.each do |meth|
+			setup
+			results_hash[meth.name] = catch :assertion_failure do meth.call end 
+			teardown
+			@formatter.print_test_result(meth_name,results_hash[meth.name],i)
+			i += 1
+		end
+		results_hash
+	end
+
+	def run_object_tests
+		results_hash = {}
+		i = find_tests.size + 1
+		@object_tests.each do |test|
+			setup
+			results_hash[test.title] = catch :assertion_failure do test.run end
+			teardown
+			@formatter.print_test_result(test.title,results_hash[test.title],i)
+			i += 1
+		end
+	end
+
+
 	def run
 		begin 
-			setup
+			case_setup
 			formatter.header(self)
-			@test.each do |test|
-				catch :assertion_failed do
-					test.run
-				end
-				formatter.report(test)
-			end
+			run_method_tests
+			run_object_tests
 			formatter.footer(self)
-			teardown
+			case_teardown
 		rescue => ex
 			puts  ex
 			puts ex.backtrace
 		end 
 	end
 
-	def test_count
-		@test.size
+	def count_test
+		@object_tests.size + find_tests.size
 	end
 end # TestCase
 # This class is a template for different output formats:
@@ -182,6 +298,9 @@ class Formatter
 		puts string
 	end
 
+	def print_test_result(name, result, num)
+		puts "#{name} #{result} # #{num}"
+	end
 	def footer(context)
 		puts(context.title, "is over")
 	end
@@ -190,8 +309,17 @@ end
 class TAPFormatter < Formatter
 	def header(context)
 		puts "# #{context.title} starting"
-		puts "1..#{context.test_count}"
+		puts "1..#{context.count_test}"
 	end
+
+	def print_test_result(name, result, num = nil)
+		if num 
+			puts "#{num} #{result} # #{name}"
+		else
+			puts "#{result} # #{name}"
+		end
+	end
+
 	def report(context)
 		if context.result == :OK then puts "ok - #{context.title} #{context.description} # #{context.explanation}" 
 		else puts "not_ok - #{context.title} #{context.description} # #{context.result} #{context.explanation}"
@@ -223,22 +351,6 @@ class Test
 	def run
 		@formatter.put("Run:Nothing here")
 	end
-	def assert(val)
-		unless val 
-			@result = :NOT_OK
-			raise "Assertion_failed"
-		else
-			@result = :OK
-		end
-	end
-	def assert_equal(a,b)
-		unless a == b 
-			@result = :NOT_OK
-			raise "Assertion_failed"
-		else
-			@result = :OK
-		end
-	end
 	def result
 		@result
 	end
@@ -256,7 +368,7 @@ end
 class ExternalCommand
 	include DebugPrint
 	DEFAULT_TIMEOUT = 2
-	attr_accessor :localBinDir,:cmd, :startcmd
+	attr_accessor :localBinDir,:cmd, :startcmd, :timeout
 	def initialize(options = {})
 		topDir = options["topDir"]
 		binDir = options["binDir"]
@@ -270,15 +382,17 @@ class ExternalCommand
 		@buffer = ''
 	end
 	def start
-		savedir = Dir.pwd
-		Dir.chdir(@startdir)
-		@pipe = IO.popen(@startcmd,"r+")
-		Dir.chdir(savedir)
-		#	sleep(5)
-		read_loop
+		if @cmd 
+			savedir = Dir.pwd
+			Dir.chdir(@startdir)
+			@pipe = IO.popen(@startcmd,"r+")
+			Dir.chdir(savedir)
+			#	sleep(5)
+			#read_loop
+		end
 	end
-	def read
-		read_loop
+	def read(timeout = @timeout)
+		read_loop(timeout)
 		buf = @buffer
 		@buffer = ''
 		buf
