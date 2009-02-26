@@ -1,4 +1,9 @@
 # = EPICS TEST 
+# !!!!! IMPORTANT !!!!!!
+# !!! caRepeater has to be running on all the machines involved in this tests 
+# otherwise you may experience zombie invasion of ca-lib using programs
+# !!! You've been WARNED !!!
+#
 # Requirements to use: 
 # 1. Install  EPICS and all the required libraries on ALL target
 # computers intended for testing
@@ -15,6 +20,11 @@
 # 
 # For implementing your own test scenario please refer to the existing files
 #
+# DONE list ->
+# 
+# 2. make command.start configurable and automatic. 
+# 3. reimplement setup/teardown for all tests and each 
+#			make named setup/teardown ??? 
 # 
 # TODO list -> 
 # 1.  Do something with variables visibility from TestCase to Test 
@@ -26,12 +36,6 @@
 # OK I remebered.... I implemented Test case in order to hide the printing and other stuff 
 # to make pluggable Formatter. Insted I can require using provided Formatter API to print. 
 # Or --> run threaded ..
-#
-# 2. make command.start configurable and automatic. 
-#
-# 3. reimplement setup/teardown for all tests and each 
-#			make named setup/teardown ??? 
-#
 #
 #	4. check the startup/cleanup procedures 
 #		try to close IOC and commands gracefully. Of course they suppose to
@@ -45,13 +49,24 @@
 # one test case may "Bail Out" but what is left has to be executed. 
 #
 #
-# 
-#
-#
 
 require 'rubygems'
 require 'net/ssh'
 require 'cfg'
+
+#assrtion methods throw :assertion_failure in case of "false" 
+#and the value returned is set to :NOT_OK
+#otherwise they return :OK
+def assert(val)
+	throw :assertion_failure, :NOT_OK unless val 
+	:OK
+end
+def assert_equal(a,b)
+	throw :assertion_failure, :NOT_OK unless a == b 
+	:OK
+end
+
+
 # = EPICS TEST AUTOMATION UTILITIES
 #
 # * TestCase is a container for a test case. It should contain the tests which share same IOCs and Commands. 
@@ -66,6 +81,8 @@ require 'cfg'
 # and COMMAND1 to COMMAND5 
 # please see example config file for details.  
 #
+
+
 module EPICSTestUtils
 	TEST_RESULTS = [:OK, :NOT_OK, :BAIL_OUT, :TODO, :SKIP]
 	IOC_NAMES = ["IOC0", "IOC1", "IOC2", "IOC3", "IOC4", "IOC5"]
@@ -77,18 +94,6 @@ module EPICSTestUtils
 		exit
 	end
 =end
-
-#assrtion methods throw :assertion_failure in case of "false" 
-#and the value returned is set to :NOT_OK
-#otherwise they return :OK
-def assert(val)
-	throw :assertion_failure, :NOT_OK unless val 
-	:OK
-end
-def assert_equal(a,b)
-	throw :assertion_failure, :NOT_OK unless a == b 
-	:OK
-end
 
 module DebugPrint
 	attr_accessor :debug_level
@@ -175,20 +180,20 @@ class TestCase
 	end
 
 	def start_commands
-		#@command.each {|x| x.start}
+		@command.each {|x| x.autostart}
 	end
 
 	def stop_commands
-		@command.each { |x| x.exit } 
+		@command.each { |x| x.autoexit } 
 	end
 
 
 	def start_iocs
-		@ioc.each { |ioc| ioc.start }
+		@ioc.each { |ioc| ioc.autostart }
 	end
 
 	def stop_iocs
-		@ioc.each { |ioc| ioc.exit }
+		@ioc.each { |ioc| ioc.autoexit }
 	end
 	
 	# Placeholder for user defined setup function
@@ -235,7 +240,7 @@ class TestCase
 		stop_commands
 	end
 
-	# It calles all the methods defined inside TestCase that 
+	# It calls all the methods defined inside TestCase that 
 	# start with 'test' 
 	# and returns results as a hash, "meth_name => result" 
 	def run_method_tests
@@ -243,14 +248,16 @@ class TestCase
 		i = 1
 		find_tests.sort.each do |meth|
 			setup
-			results_hash[meth.name] = catch :assertion_failure do meth.call end 
+			results_hash[meth] = catch :assertion_failure do self.send meth end 
 			teardown
-			@formatter.print_test_result(meth_name,results_hash[meth.name],i)
+			@formatter.print_test_result(meth,results_hash[meth],i)
 			i += 1
 		end
 		results_hash
 	end
 
+	# Calls tests implemented as Objects of Class Test
+	# _Deprecated_
 	def run_object_tests
 		results_hash = {}
 		i = find_tests.size + 1
@@ -263,7 +270,7 @@ class TestCase
 		end
 	end
 
-
+	# main test case exeution sequence
 	def run
 		begin 
 			case_setup
@@ -275,6 +282,9 @@ class TestCase
 		rescue => ex
 			puts  ex
 			puts ex.backtrace
+			# kill all in case something is left behind
+			@command.each { |x| x.kill_all }
+			@ioc.each { |x| x.kill_all }
 		end 
 	end
 
@@ -282,6 +292,7 @@ class TestCase
 		@object_tests.size + find_tests.size
 	end
 end # TestCase
+
 # This class is a template for different output formats:
 # Particular formatters should derive from here
 # TAP, HTML, TEXT etc. 
@@ -370,44 +381,81 @@ class ExternalCommand
 	DEFAULT_TIMEOUT = 2
 	attr_accessor :localBinDir,:cmd, :startcmd, :timeout
 	def initialize(options = {})
-		topDir = options["topDir"]
-		binDir = options["binDir"]
-		hostArch = options["epicsHostArch"]
-		@localBinDir = "#{topDir}/#{binDir}"
+		@options = options
+		@pids = []
+		@buffer = ''
+		@err_buffer = ''
+		@topDir = options["topDir"]
+		@binDir = options["binDir"]
+		@bootDir = options["bootDir"]
+		@ioc = options["ioc"]
 		@cmd = options["cmd"]
-		@startcmd = "#{localBinDir}/#{cmd}"
-		@startdir = topDir
+		@hostArch = options["epicsHostArch"]
+		@hostname = options["hostname"]
+		@localBinDir = "#{@topDir}/#{@binDir}/#{@hostArch}"
+		@startdir = @topDir
 		@timeout = options["timeout"].nil? ? DEFAULT_TIMEOUT : options["timeout"]
 		@done = false
-		@buffer = ''
-	end
-	def start
+		@debug = options["debug_level"]
 		if @cmd 
+			@startcmd = "#{@localBinDir}/#{@cmd}"
+		else 
+			@startcmd = nil
+		end
+	end
+
+	# This function is called from TestCase.setup_commands and TestCase.setup_iocs 
+	# if autostart is defined in corresponding section of config file then 
+	# "start" is called, if autostart is not defined of equal "no" then it is not called, 
+	# and user has to call "start" manually. I.e. if you need to stop/start commands/iocs between
+	# tests, then this feature is useful. caTest.rb uses this functionality. 
+	def autostart
+		debug(@options["autostart"].class.name,2)
+		if @options["autostart"] 
+			self.start
+		end
+	end
+
+	# same as autostart but for exit 
+	def autoexit
+		if @options["autostart"] 
+			self.exit
+		end
+	end
+
+	# start the program
+	def start
+		if @startcmd
 			savedir = Dir.pwd
 			Dir.chdir(@startdir)
 			@pipe = IO.popen(@startcmd,"r+")
+			@pids << @pipe.pid
 			Dir.chdir(savedir)
-			#	sleep(5)
-			#read_loop
 		end
 	end
+
 	def read(timeout = @timeout)
 		read_loop(timeout)
 		buf = @buffer
 		@buffer = ''
 		buf
 	end
+
 	def command(msg)
 		@pipe.puts msg
 	end
+
 	def start_timer
 		@start_time = Time.now
 	end
+	
 	def timeout?(val = @timeout)
 		(Time.now - @start_time) > val
 	end
 
 	def read_loop(timeout = @timeout)
+		raise "Pipe is nil" unless @pipe
+		raise "Pipe is closed!" if @pipe.closed? 
 		start_timer
 		loop do
 			empty = true
@@ -434,6 +482,19 @@ class ExternalCommand
 		if @pipe then 
 			Process.kill("TERM", @pipe.pid)
 			@pipe.close
+			@pipe = nil
+		end
+	end
+	
+	def suspend
+		if @pipe then 
+			Process.kill("STOP", @pipe.pid)
+		end
+	end
+	
+	def continue
+		if @pipe then 
+			Process.kill("CONT", @pipe.pid)
 		end
 	end
 
@@ -441,6 +502,24 @@ class ExternalCommand
 		if @pipe then 
 			Process.kill("KILL",@pipe.pid)
 			@pipe.close
+		end
+	end
+
+	def kill_all
+		@pids.each do |pid| 
+			begin
+				Process.kill("TERM",pid)
+			rescue Errno::ESRCH
+				next
+			end
+		end
+		sleep(2)
+		@pids.each do |pid| 
+			begin
+				Process.kill("KILL",pid)
+			rescue Errno::ESRCH
+				next
+			end
 		end
 	end
 end
@@ -461,48 +540,30 @@ end
 class IOCLocal < ExternalCommand
 	DEFAULT_TIMEOUT = 2
 	def initialize(options={})
-		@options=options
-		topDir = options["topDir"]
-		binDir = options["binDir"]
-		bootDir = options["bootDir"]
-		hostArch = options["epicsHostArch"]
-		cmd = options["cmd"]
-		ioc = options["ioc"]
-		@localBinDir = "#{topDir}/#{binDir}"
-		@startdir = "#{topDir}/#{bootDir}"
-		@startcmd = "#{topDir}/#{binDir}/#{hostArch}/#{ioc} #{cmd}"
-		@buffer = ''
-		@timeout = options["timeout"].nil? ? DEFAULT_TIMEOUT : options["timeout"]
+		super
+		@startdir = "#{@topDir}/#{@bootDir}"
+		@startcmd = "#{@topDir}/#{@binDir}/#{@hostArch}/#{@ioc} #{@cmd}"
 	end
 	def start
 		savedir = Dir.pwd
 		Dir.chdir(@startdir)
 		@pipe = IO.popen(@startcmd,"r+")
+		@pids << @pipe.pid
 		Dir.chdir(savedir)
 		sleep(5)
 		read_loop
 	end
 end
 
+# Shell command on remote machine via SSH
 class SSHCommand <  ExternalCommand
 	include DebugPrint
 	DEFAULT_TIMEOUT = 2
 	attr_accessor :buffer, :err_buffer, :done
 	def initialize(options={})
-		topDir = options["topDir"]
-		binDir = options["binDir"]
-		hostArch = options["epicsHostArch"]
-		@localBinDir = "#{topDir}/#{binDir}"
-		@done = false
-		@debug_level = options["debug_level"]
-		cmd = options["cmd"]
-		@startdir = topDir
-		@startcmd = "#{topDir}/#{binDir}/#{cmd}"
-		@timeout = options["timeout"].nil? ? DEFAULT_TIMEOUT : options["timeout"]
+		super
+		@startcmd = "#{@localBinDir}/#{cmd}"
 		@session = Net::SSH.start(options["hostname"], options["user"])
-		@buffer = ''
-		@err_buffer = ''
-		@done = false
 	end
 
 	def start
@@ -548,30 +609,16 @@ class SSHCommand <  ExternalCommand
 	alias kill close
 end
 
+# IOC on remote machine via SSH
 class IOCSSH < SSHCommand
 	include DebugPrint
 	DEFAULT_TIMEOUT = 2
 	attr_accessor :buffer, :err_buffer, :done
 	def initialize(options={})
-		@options = options
-		@debug_level = options["debug_level"]
-		remoteHostname = options["hostname"]
-		remoteHostArch = options["epicsHostArch"]
-		topDir = options["topDir"]
-		binDir = options["binDir"]
-		bootDir = options["bootDir"]
-		hostArch = options["epicsHostArch"]
-		cmd = options["cmd"]
-		ioc = options["ioc"]
-		@localBinDir = "#{topDir}/#{binDir}"
-		@startdir = "#{topDir}/#{bootDir}"
-		@startcmd = "#{topDir}/#{binDir}/#{hostArch}/#{ioc} #{cmd}"
-		@buffer = ''
-		@timeout = options["timeout"].nil? ? DEFAULT_TIMEOUT : options["timeout"]
+		super
+		@startdir = "#{@topDir}/#{@bootDir}"
+		@startcmd = "#{@localBinDir}/#{@ioc} #{@cmd}"
 		@session = Net::SSH.start(remoteHostname, options["user"])
-		@buffer = ''
-		@err_buffer = ''
-		@done = false
 	end
 end
 end
