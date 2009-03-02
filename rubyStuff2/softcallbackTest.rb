@@ -50,7 +50,9 @@ class TestSoftCallback < EPICSTestUtils::TestCase
 
 	def do_test(client_reference, reference, client_response)
 		ioc[0].command("")
-		response = @ioc.read(2).split("\n")
+		response = ioc[0].get_response(3)
+		debug(response,2)
+		debug(reference,2)
 		count = [0,0]
 		response.each do |line| 
 			line.gsub!("\r\n","\n")

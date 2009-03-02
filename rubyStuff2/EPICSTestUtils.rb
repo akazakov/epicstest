@@ -267,12 +267,19 @@ class TestCase
 		COMMAND_NAMES.each do |cur| 
 			unless @options.has_key?(cur) then break end
 			options = @options[cur]
+=begin
 			if options["type"].nil? || options["type"] == "SH"
 				@command << SH.new(options)
 			elsif options["type"] == "SSH"
 				@command << SSHCommand.new(options)
 			else
 				raise "Unknown connection type"
+			end
+=end
+			if options.host == "localhost" 
+				@command << SH.new(options)
+			else 
+				@command << SSHCommand.new(options)
 			end
 		end
 	end
@@ -616,6 +623,7 @@ class ExternalCommand
 		read_loop(timeout, @pp[1], @buffer)
 		buf = @buffer
 		@buffer = ''
+		debug(buf,9, @name)
 		buf
 	end
 	alias :read_stdin :read
@@ -645,9 +653,18 @@ class ExternalCommand
 		debug("#{resp_lines} \n ===", 8)	
 		resp_lines.join
 	end
+	
+	def get_response(timeout = @timeout)
+		resp = read(timeout)
+		debug(resp,3)
+		resp_lines = resp.to_a
+		if resp_lines[-1] == @prompt
+			resp_lines.delete_at(-1)
+		end
+		resp_lines.join
+	end
 
 	alias talk command_response 
-
 
 	def close_pipes
 		debug("",3,@name)
@@ -748,33 +765,34 @@ class SSHCommand <  ExternalCommand
 	attr_reader :echo
 	def initialize(options={})
 		super
-		@startcmd = "#{@localBinDir}/#{cmd}"
 		@session = Net::SSH.start(options["hostname"], options["user"])
 	end
 
 	def start
 		debug("",2,@name)
-		ssh = @session
-		@channel = ssh.open_channel do |ch| 
-			ch.exec "cd #{@startdir} && #{@startcmd}" do |ch, success| 
-				abort "could not execute command" unless success
-				ch.on_data do |chn, data|
-					debug("got stdout:\n #{data}", 4)
-					#ch.send_data "something for stdin\n"
-					@buffer << data
-				end
-				ch.on_extended_data do |chn, type, data|
-					debug("got stderr: #{data}", 4)
-					@err_buffer << data
-				end
-				ch.on_close do |ch|
-					debug("channel is closing!",2, @name)
-					#	unless @done then raise "Command exited unexpectedly" end
+		if @startcmd
+			ssh = @session
+			@channel = ssh.open_channel do |ch| 
+				ch.exec "cd #{@startdir} && #{@startcmd}" do |ch, success| 
+					abort "could not execute command" unless success
+					ch.on_data do |chn, data|
+						debug("got stdout:\n #{data}", 4)
+						#ch.send_data "something for stdin\n"
+						@buffer << data
+					end
+					ch.on_extended_data do |chn, type, data|
+						debug("got stderr: #{data}", 4)
+						@err_buffer << data
+					end
+					ch.on_close do |ch|
+						debug("channel is closing!",2, @name)
+						#	unless @done then raise "Command exited unexpectedly" end
+					end
 				end
 			end
+			read_loop(5)
+			check_terminal
 		end
-		read_loop(5)
-		check_terminal
 	end
 
 	def read_loop(timeout = @timeout, io = nil, buf = nil )
