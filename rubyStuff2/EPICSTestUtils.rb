@@ -52,13 +52,17 @@
 
 require 'rubygems'
 require 'net/ssh'
+require 'ruby-debug'
 require 'cfg'
 
 #assrtion methods throw :assertion_failure in case of "false" 
 #and the value returned is set to :NOT_OK
 #otherwise they return :OK
-def assert(val)
+def assert(val = true, &block)
 	throw :assertion_failure, :NOT_OK unless val 
+	unless block.nil? 
+		throw :assertion_failure, :NOT_OK unless block.call
+	end
 	:OK
 end
 def assert_equal(a,b)
@@ -100,7 +104,11 @@ module DebugPrint
 	def debug(msg, esc, adr='')
 		unless @debug_level.nil? then 
 			if @debug_level >= esc then 
-				STDERR.puts "<=:DEBUG[" + this_method + "|"  + adr + "]:  "+ msg.to_s + "   :=>"
+				out_str = "DEBUG#{esc}|" + this_method + "|"  + adr + "|:"
+				unless msg.to_s.empty? 
+				 	out_str += " #{msg.to_s}" 
+				end
+				STDERR.puts  out_str
 			end
 		end
 	end
@@ -108,6 +116,83 @@ module DebugPrint
 	def this_method
 		caller[1][/`([^']*)'/, 1]
 	end
+end
+
+module Open3
+  # 
+	# This is just a little changed version of standard Open3 module. 
+	# it returns pid along with pipes
+  # Open stdin, stdout, and stderr streams and start external executable.
+  # Non-block form:
+  #   
+  #   require 'open3'
+  #
+  #   [stdin, stdout, stderr] = Open3.popen3(cmd)
+  #
+  # Block form:
+  #
+  #   require 'open3'
+  #
+  #   Open3.popen3(cmd) { |stdin, stdout, stderr| ... }
+  #
+  # The parameter +cmd+ is passed directly to Kernel#exec.
+  #
+  def popen3(*cmd)
+    pw = IO::pipe   # pipe[0] for read, pipe[1] for write
+    pr = IO::pipe
+    pe = IO::pipe
+		rd, wr = IO::pipe
+
+    pid = fork{
+      # child
+			rd.close
+      chpid = fork{
+	# grandchild
+	pw[1].close
+	STDIN.reopen(pw[0])
+	pw[0].close
+
+	pr[0].close
+	STDOUT.reopen(pr[1])
+	pr[1].close
+
+	pe[0].close
+	STDERR.reopen(pe[1])
+	pe[1].close
+
+	exec(*cmd)
+      }
+			wr.puts chpid
+      exit!(0)
+    }
+		wr.close
+		chpid = rd.gets.to_i
+		rd.close
+    pw[0].close
+    pr[1].close
+    pe[1].close
+    Process.waitpid(pid)
+    pi = [pw[1], pr[0], pe[0]]
+		pi.each do |pp|
+			def pp.setpid(spid) 
+			@pid = spid
+			end
+			def pp.pid
+				@pid
+			end
+			pp.setpid(chpid)
+		end
+    pw[1].sync = true
+    if defined? yield
+      begin
+	return yield(*pi)
+      ensure
+	pi.each{|p| p.close unless p.closed?}
+      end
+    end
+    pi
+  end
+  module_function :popen3
 end
 
 #
@@ -132,7 +217,10 @@ class TestCase
 		@command=[]
 		@title = self.class.name
 		@options = Cfg.c[@title]
+		raise "Config file has no section for #{@title}" if @options.nil? 
 		@debug_level = @options['debug_level']
+		@name = @title
+		debug("",2,@name)
 	end
 
 	def << (test)
@@ -140,6 +228,7 @@ class TestCase
 	end
 
 	def find_tests
+		debug("",5,@name)
 			self.methods.delete_if { |meth| meth !~ /^test/ }
 	end
 
@@ -151,9 +240,11 @@ class TestCase
 	# Deafult configurator for IOCs
 	#
 	def setup_iocs
+		debug("",5,@name)
 		IOC_NAMES.each do |cur| 
 			unless @options.has_key?(cur) then break end
 			iocOptions = @options[cur]
+=begin
 			if iocOptions["type"].nil? || iocOptions["type"] == "SH"
 				@ioc << IOCLocal.new(iocOptions)
 			elsif iocOptions["type"] == "SSH"
@@ -161,11 +252,18 @@ class TestCase
 			else
 				raise "Unknown connection type"
 			end
+=end
+			if iocOptions.host == "localhost"
+				@ioc << IOCLocal.new(iocOptions)
+			else 
+				@ioc << IOCSSH.new(iocOptions)
+			end
 		end
 	end
 
 	# Default configurator for commands
 	def setup_commands
+		debug("",5,@name)
 		COMMAND_NAMES.each do |cur| 
 			unless @options.has_key?(cur) then break end
 			options = @options[cur]
@@ -180,19 +278,23 @@ class TestCase
 	end
 
 	def start_commands
+		debug("",5,@name)
 		@command.each {|x| x.autostart}
 	end
 
 	def stop_commands
+		debug("",5,@name)
 		@command.each { |x| x.autoexit } 
 	end
 
 
 	def start_iocs
+		debug("",5,@name)
 		@ioc.each { |ioc| ioc.autostart }
 	end
 
 	def stop_iocs
+		debug("",5,@name)
 		@ioc.each { |ioc| ioc.autoexit }
 	end
 	
@@ -205,8 +307,15 @@ class TestCase
 
 	# Placeholder for user defined setup function
 	# which is called after ioc and commands are initialized, but 
-	# before the iocs are started. 
+	# before the iocs are started. Therefore IOCs and Commands cannot accept 
+	# control commands yet. You can only set global variables change config and do 
+	# other stuf which has to be done before the IOCs and COMMANDS are started. 
 	def global_setup
+	end
+
+	# this function is called after IOC and Commands are started. 
+	# thus you can redefine this function and issue some commands to IOC
+	def	global_setup_after_start
 	end
 
 	# Placeholder for user defined teardown function
@@ -226,15 +335,18 @@ class TestCase
 	# and start iocs
 	# for commands start is not called
 	def case_setup
+		debug("",3,@name)
 		setup_iocs
 		setup_commands
 		global_setup
 		start_iocs
 		start_commands
+		global_setup_after_start
 	end
 
 
 	def case_teardown
+		debug("",3,@name)
 		global_teardown
 		stop_iocs
 		stop_commands
@@ -244,6 +356,7 @@ class TestCase
 	# start with 'test' 
 	# and returns results as a hash, "meth_name => result" 
 	def run_method_tests
+		debug("",5,@name)
 		results_hash = {}
 		i = 1
 		find_tests.sort.each do |meth|
@@ -259,6 +372,7 @@ class TestCase
 	# Calls tests implemented as Objects of Class Test
 	# _Deprecated_
 	def run_object_tests
+		debug("",5,@name)
 		results_hash = {}
 		i = find_tests.size + 1
 		@object_tests.each do |test|
@@ -272,6 +386,7 @@ class TestCase
 
 	# main test case exeution sequence
 	def run
+		debug("",3,@name)
 		begin 
 			case_setup
 			formatter.header(self)
@@ -381,6 +496,7 @@ class ExternalCommand
 	DEFAULT_TIMEOUT = 2
 	attr_accessor :localBinDir,:cmd, :startcmd, :timeout
 	def initialize(options = {})
+		@pp = []
 		@options = options
 		@pids = []
 		@buffer = ''
@@ -396,13 +512,27 @@ class ExternalCommand
 		@startdir = @topDir
 		@timeout = options["timeout"].nil? ? DEFAULT_TIMEOUT : options["timeout"]
 		@done = false
-		@debug = options["debug_level"]
+		@debug_level = options["debug_level"]
 		if @cmd 
 			@startcmd = "#{@localBinDir}/#{@cmd}"
 		else 
 			@startcmd = nil
 		end
+		@name = "#{self.class.name}:#{@cmd}@#{@hostname}"
+		@echo = @prompt = nil
+		debug("",5,@name)
 	end
+
+	def check_terminal
+		@echo = false
+		read(1)
+		command("pwd")
+		response = read(1).to_a
+		if response[0] =~ /^ *pwd/ then @echo = true end
+		@prompt = response[-1]
+		debug("echo = #{@echo} prompt = #{@prompt}", 2 , @name)
+	end
+
 
 	# This function is called from TestCase.setup_commands and TestCase.setup_iocs 
 	# if autostart is defined in corresponding section of config file then 
@@ -410,7 +540,7 @@ class ExternalCommand
 	# and user has to call "start" manually. I.e. if you need to stop/start commands/iocs between
 	# tests, then this feature is useful. caTest.rb uses this functionality. 
 	def autostart
-		debug(@options["autostart"].class.name,2)
+		debug("autostart= #{@options['autostart']}",3,@name)
 		if @options["autostart"] 
 			self.start
 		end
@@ -418,6 +548,7 @@ class ExternalCommand
 
 	# same as autostart but for exit 
 	def autoexit
+		debug("autostart= #{@options['autostart']}",3,@name)
 		if @options["autostart"] 
 			self.exit
 		end
@@ -425,42 +556,44 @@ class ExternalCommand
 
 	# start the program
 	def start
+		debug("",2,@name)
 		if @startcmd
 			savedir = Dir.pwd
 			Dir.chdir(@startdir)
-			@pipe = IO.popen(@startcmd,"r+")
-			@pids << @pipe.pid
+			@pp = Open3.popen3(@startcmd)
+			debug("pid #{@pp[1].pid}", 2, @name)
+			debug("got pipe #{@pp}", 4, @name)
+			@pids << @pp[1].pid
 			Dir.chdir(savedir)
 		end
 	end
-
-	def read(timeout = @timeout)
-		read_loop(timeout)
-		buf = @buffer
-		@buffer = ''
+	def read_stderr(timeout = @timeout)
+		debug("",2,@name)
+		read_loop(timeout, @pp[2], @err_buffer)
+		buf = @err_buffer
+		@err_buffer = ''
 		buf
 	end
 
-	def command(msg)
-		@pipe.puts msg
-	end
-
 	def start_timer
+		debug("",14,@name)
 		@start_time = Time.now
 	end
 	
 	def timeout?(val = @timeout)
+		debug("",11,@name)
 		(Time.now - @start_time) > val
 	end
 
-	def read_loop(timeout = @timeout)
-		raise "Pipe is nil" unless @pipe
-		raise "Pipe is closed!" if @pipe.closed? 
+	def read_loop(timeout = @timeout, io = @pp[1], buf = @buffer)
+		debug("",5,@name)
+		raise "Pipe is nil" if io.nil?
+		raise "Pipe is closed!" if io.closed? 
 		start_timer
 		loop do
 			empty = true
 			begin 
-				@buffer << @pipe.read_nonblock(1024)
+				buf << io.read_nonblock(1024)
 				empty = false
 			rescue Errno::EAGAIN
 				if empty 
@@ -478,34 +611,82 @@ class ExternalCommand
 		end
 	end
 
+	def read(timeout = @timeout)
+		debug("",2,@name)
+		read_loop(timeout, @pp[1], @buffer)
+		buf = @buffer
+		@buffer = ''
+		buf
+	end
+	alias :read_stdin :read
+
+	def command(msg, timeout = 0)
+		debug(msg,2,@name)
+		@pp[0].puts msg
+		if timeout 
+			sleep timeout
+		end
+	end
+
+	def command_response(cmd, timeout = @timeout)
+		read
+		command(cmd)
+		resp = read(timeout)
+		resp_lines = resp.to_a
+		debug(">>> #{cmd}\n #{resp} \n ===", 8)	
+		debug("#{resp_lines} \n ===", 8)	
+		if @echo
+			resp_lines.delete_at(0)
+			debug("first line deleted", 8)	
+		end
+		if resp_lines[-1] == @prompt
+			resp_lines.delete_at(-1)
+		end
+		debug("#{resp_lines} \n ===", 8)	
+		resp_lines.join
+	end
+
+	alias talk command_response 
+
+
+	def close_pipes
+		debug("",3,@name)
+		@pp.each { |pp| pp.close unless pp.closed? }
+		@pp = []
+	end
+
 	def exit
-		if @pipe then 
-			Process.kill("TERM", @pipe.pid)
-			@pipe.close
-			@pipe = nil
+		debug("",2,@name)
+		unless @pp.empty? then 
+			Process.kill("TERM", @pp[2].pid)
+			close_pipes
 		end
 	end
 	
 	def suspend
-		if @pipe then 
-			Process.kill("STOP", @pipe.pid)
+		debug("",2,@name)
+		unless @pp.empty? then 
+			Process.kill("STOP", @pp[2].pid)
 		end
 	end
 	
 	def continue
-		if @pipe then 
-			Process.kill("CONT", @pipe.pid)
+		debug("",2,@name)
+		unless @pp.empty? then 
+			Process.kill("CONT", @pp[2].pid)
 		end
 	end
 
 	def kill
-		if @pipe then 
-			Process.kill("KILL",@pipe.pid)
-			@pipe.close
+		debug("",2,@name)
+		unless @pp.empty? then 
+			Process.kill("KILL",@pp[2].pid)
+			close_pipes
 		end
 	end
 
 	def kill_all
+		debug("",2,@name)
 		@pids.each do |pid| 
 			begin
 				Process.kill("TERM",pid)
@@ -527,6 +708,7 @@ end
 #Run command in shell on localhost
 class SH < ExternalCommand
 	def exec(command)
+		debug(command,2,@name)
 		@done = false
 		result = `#{command}`
 		@done = true
@@ -545,13 +727,16 @@ class IOCLocal < ExternalCommand
 		@startcmd = "#{@topDir}/#{@binDir}/#{@hostArch}/#{@ioc} #{@cmd}"
 	end
 	def start
+		debug("",2,@name)
 		savedir = Dir.pwd
 		Dir.chdir(@startdir)
-		@pipe = IO.popen(@startcmd,"r+")
-		@pids << @pipe.pid
+		@pp = Open3.popen3(@startcmd)
+		@pids << @pp[2].pid
 		Dir.chdir(savedir)
 		sleep(5)
-		read_loop
+		read
+		read_loop(@timeout, @pp[2],@err_buffer)
+		check_terminal
 	end
 end
 
@@ -560,6 +745,7 @@ class SSHCommand <  ExternalCommand
 	include DebugPrint
 	DEFAULT_TIMEOUT = 2
 	attr_accessor :buffer, :err_buffer, :done
+	attr_reader :echo
 	def initialize(options={})
 		super
 		@startcmd = "#{@localBinDir}/#{cmd}"
@@ -567,41 +753,51 @@ class SSHCommand <  ExternalCommand
 	end
 
 	def start
+		debug("",2,@name)
 		ssh = @session
 		@channel = ssh.open_channel do |ch| 
 			ch.exec "cd #{@startdir} && #{@startcmd}" do |ch, success| 
 				abort "could not execute command" unless success
 				ch.on_data do |chn, data|
-					debug("got stdout: #{data}", 2)
+					debug("got stdout:\n #{data}", 4)
 					#ch.send_data "something for stdin\n"
 					@buffer << data
 				end
 				ch.on_extended_data do |chn, type, data|
-					debug("got stderr: #{data}", 2)
+					debug("got stderr: #{data}", 4)
 					@err_buffer << data
 				end
 				ch.on_close do |ch|
-					debug("channel is closing!",2)
+					debug("channel is closing!",2, @name)
 					#	unless @done then raise "Command exited unexpectedly" end
 				end
 			end
 		end
 		read_loop(5)
+		check_terminal
 	end
 
-	def read_loop(timeout = @timeout)
+	def read_loop(timeout = @timeout, io = nil, buf = nil )
+		debug("",5,@name)
 		start_timer
 		@session.loop(timeout) { not timeout?(timeout) }
 	end
 
 	def command(cmd)
+		debug(cmd,2,@name)
+		if cmd[-2..-1] != "\n" 
+			cmd += "\n"
+		end
 		@channel.send_data(cmd)
+		@channel.process
 	end
 
 	def exec(command)
+		debug("",2,@name)
 		@session.exec!(command).to_s
 	end
 	def close
+		debug("",2,@name)
 		@done = true
 		@session.close
 	end
@@ -618,7 +814,8 @@ class IOCSSH < SSHCommand
 		super
 		@startdir = "#{@topDir}/#{@bootDir}"
 		@startcmd = "#{@localBinDir}/#{@ioc} #{@cmd}"
-		@session = Net::SSH.start(remoteHostname, options["user"])
+		@session = Net::SSH.start(@hostname, options["user"])
+		debug("opened connection to #{@hostname}: #{@session}", 2)
 	end
 end
 end
