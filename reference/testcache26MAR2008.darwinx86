@@ -1,0 +1,39 @@
+# test caching puts
+#First test that dbPutField caches
+dbpf "mrk13.DISV","3"
+DBR_SHORT:          3         0x3                 
+dbpf "mrk11","2"
+_main_: Process mrk11
+Starting asynchronous processing: mrk11
+DBR_DOUBLE:         2                   
+dbpf "mrk11","3"
+_main_: Active mrk11
+DBR_DOUBLE:         3                   
+# wait for completion
+epicsThreadSleep(7.0)
+Completed asynchronous processing: mrk11
+cbLow: Process mrk12
+cbLow: Process mrk13
+Starting asynchronous processing: mrk13
+scanOnce: Process mrk11
+Starting asynchronous processing: mrk11
+Completed asynchronous processing: mrk11
+cbLow: Process mrk12
+cbLow: Active mrk13
+Completed asynchronous processing: mrk13
+#Now test that dbPutLink caches
+dbpf "mrk11.DISV","0"
+DBR_SHORT:          0         0x0                 
+dbpf "mrk13","5"
+_main_: Process mrk13
+Starting asynchronous processing: mrk13
+DBR_DOUBLE:         5                   
+dbpf "mrk11","5"
+_main_: Process mrk11
+_main_: Process mrk12
+DBR_DOUBLE:         5                   
+epicsThreadSleep(7.0)
+Completed asynchronous processing: mrk13
+scanOnce: Process mrk13
+Starting asynchronous processing: mrk13
+Completed asynchronous processing: mrk13

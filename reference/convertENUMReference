@@ -1,0 +1,12 @@
+
+Put Value           enumCmbbi           enumMDbmbbi         enumMCambbi
+
+Soft Channel        Soft Channel        Soft Channel        Soft Channel        
+LOW                 LOW                 LOW                 LOW                 
+state 1             state 1             state 1             state 1             
+
+Put Value           enumCmbbi           enumMDbmbbi         enumMCambbi
+
+Raw Soft Channel    Raw Soft Channel    Raw Soft Channel    Raw Soft Channel    
+HIGH                HIGH                HIGH                HIGH                
+state 4             state 4             state 4             state 4             
