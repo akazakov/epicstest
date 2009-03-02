@@ -1,12 +1,13 @@
 # = test configuration file
 # good for reference
 :default: &default
-  debug_level: 5
+  debug_level: 1
   user: tyoma
   topDir: /Users/tyoma/epics/soft-test
   epicsTopDir: /Users/tyoma/epics/base-3.14.10
   binDir: bin
   referenceDir: reference
+  autostart: yes
 
 # == :hosts:
 # should contain at least +localhost:+ definition, as long as others which you intend to use for your tests
@@ -37,48 +38,10 @@
 # So now I think the configuration should consist from Hosts ( ips, architectures, default dirs etc...) 
 # and testcases - where some test-by-test needed variables are defined.... and redefined. 
 #
-# As for the commands.... 
-# the scenario is: we use two IOC and a few commands. so we want *easily* to switch from one host to another.... so how do we do this ?
-# so we need to create aliases and use them to configure our test... 
-# by default it would use some default hosts, but if we want we can change it. 
-# So insise the test case configuration we specify its asliases and hosts. 
-#  lets say we have [host1, hots2, hots3 ... hostN] 
-#  and then in the test config we specify server1 = host1, server2 = host2, station0 = hostM 
-#  and then we use it somehow like ioc1.start on server1 and ioc2.start on server2
-#  and if we need to change it then we just change the aliasing -> server1 = hostN etc. 
-# that's it. 
 # 
-# Old stuff.... reconsider
-# All testCases need to include this part !!!!!!!!!!!! 
-#
-#
-# testcase 
-# |---- hosts
-# |        |------host1: hostname, epicsHostArch ...
-# |        |------host2 ...
-# |        |------host3 ...
-# |
-# |-----IOC0
-# |      |-------"host1" 
-# |      |---- ....
-# |      
-# |-----IOC1 ...
-# ...
-# |-----COMMAND0 
-# |       |-------"host2"
-# |       ....
-# ...
-#
-#
-#
+
 :defaultIOC: &defaultIOC
   ioc: common
-
-:defaultIOCSSH: &defaultIOCSSH
-   <<: *defaultIOC
-   host: localhost
-   user: tyoma
-   type: SSH
 
 :defaultCommand: &defaultCommand
   type: SH
@@ -88,12 +51,18 @@
   host: localhost
   user: tyoma
 
+:defaultTestCase: &defaultTestCase 
+   IOC0:
+    <<: *defaultIOC
+   COMMAND0:
+     <<: *defaultCommand
+   COMMAND1:
+     <<: *defaultCommand
+ 
 :testCases:
   MyTestCase: 
-   ioc: exampleIOC
-   tmpDir: tmp/exioc
    IOC0:
-    <<: *defaultIOCSSH
+    <<: *defaultIOC
     bootDir: iocBoot/iocalarm
     cmd: stcmd.host
     host: host2
@@ -101,6 +70,83 @@
      <<: *defaultCommandSSH
    COMMAND0:
      <<: *defaultCommand
+  
+  TestCA:
+    <<: *defaultTestCase
+    IOC0: 
+      <<: *defaultIOC
+      bootDir: iocBoot/iocca
+      cmd: stcmd.host
+      host: localhost
+      autostart: no
+    COMMAND0:
+      <<: *defaultCommand
+      autostart: no
+    COMMAND1:
+      <<: *defaultCommand
+      autostart: no
+
+  TestConvert:
+    <<: *defaultTestCase
+    IOC0: 
+      <<: *defaultIOC
+      ioc: convert
+      bootDir: iocBoot/iocconvert
+      cmd: master.main
+      host: localhost
+    IOC1: 
+      <<: *defaultIOC
+      ioc: convert
+      bootDir: iocBoot/iocconvert
+      cmd: client.main
+      host: host2
+    COMMAND0:
+      <<: *defaultCommand
+
+  TestLinkInfoLocal:
+    IOC0: 
+      <<: *defaultIOC
+      ioc: linkinfo
+      bootDir: iocBoot/ioclinkinfo
+      cmd: stcmdlocal.host
+      host: localhost
+
+  TestLinkInfoRemote:
+    IOC1: 
+      <<: *defaultIOC
+      ioc: linkinfo
+      bootDir: iocBoot/ioclinkinfo
+      cmd: stcmdremote.host
+      host: host2
+    IOC0: 
+      <<: *defaultIOC
+      ioc: linkinfo
+      bootDir: iocBoot/ioclinkinfo
+      cmd: stcmdlocal.host
+      host: localhost
+
+  TestPut:
+    IOC0: 
+      <<: *defaultIOC
+      bootDir: iocBoot/iocput
+      cmd: put.main
+      host: host2
+
+  TestSoftCallback:
+    IOC0: 
+      <<: *defaultIOC
+      bootDir: iocBoot/iocsoftcallback
+      cmd: stcmd.host
+      host: host2
+
+  TestRemoteIOCSh:
+    IOC0: 
+      <<: *defaultIOC
+      bootDir: iocBoot/iocalarm
+      cmd: stcmd.host
+      host: host2
+
+
 
   TestCase2: 
    <<: *includes
