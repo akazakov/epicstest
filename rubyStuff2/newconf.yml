@@ -1,7 +1,7 @@
 # = test configuration file
 # good for reference
 :default: &default
-  debug_level: 1
+  debug_level: 0
   user: tyoma
   topDir: /Users/tyoma/epics/soft-test
   epicsTopDir: /Users/tyoma/epics/base-3.14.10
@@ -138,6 +138,9 @@
       bootDir: iocBoot/iocsoftcallback
       cmd: stcmd.host
       host: host2
+    COMMAND0: 
+      host: localhost
+    
 
   TestRemoteIOCSh:
     IOC0: 
